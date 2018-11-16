@@ -13,3 +13,5 @@ dist/
 build/
 *.egg-info/
 .vscode/
+orb/static/node_modules
+orb/static/package-lock.json

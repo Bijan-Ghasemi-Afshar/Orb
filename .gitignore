@@ -9,11 +9,11 @@ instance/
 .coverage
 htmlcov/
 
+node_modules
+package-lock.json
 dist/
 build/
 *.egg-info/
 .vscode/
 orb/static/node_modules
 orb/static/package-lock.json
-node_modules
-package-lock.json

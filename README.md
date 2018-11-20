@@ -15,6 +15,24 @@ A simple chat-bot system
     * Make sure **pip** is installed then run `pip install -r requirements.txt`
 * Getting the javascript packages
     * Make sure **Nodejs** & **npm** are installed
-    * Navigate to **orb/static**
+    * Navigate to **Orb/orb/static**
     * Run `npm install` to install javascript packages
     * Then run `npm run build` to bundle javascript & css
+
+## Running
+* Navigate to **Orb/**
+* For *Linux* and *Mac*
+    * Run `export FLASK_APP=orb`
+    * Run `export FLASK_ENV=development`
+    * Run `flask run`
+    * In browser navigate to **localhost:5000**
+* For *Windows cmd*
+    * Run `set FLASK_APP=orb`
+    * Run `set FLASK_ENV=development`
+    * Run `flask run`
+    * In browser navigate to **localhost:5000**
+* For *Windows PowerShell*
+    * Run `$env:FLASK_APP = "orb"`
+    * Run `$env:FLASK_ENV = "development"`
+    * Run `flask run`
+    * In browser navigate to **localhost:5000**

@@ -30,7 +30,8 @@ def create_app(test_config=None):
     # a simple page that says hello
     @app.route('/')
     def hello():
-        test_data = mongo.db.testDoc.find_one_or_404()
-        return render_template('home.html', test_data=test_data)
+        # test_data = mongo.db.testDoc.find_one_or_404()
+        # return render_template('home.html', test_data=test_data)
+        return render_template('home.html')
 
     return app

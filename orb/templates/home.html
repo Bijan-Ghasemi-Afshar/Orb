@@ -11,7 +11,26 @@
   <body class="container">
     <h1 class="text-center">Orb<br>Ticket Finder Chat-bot</h1>
     <hr>
-    <p>{{test_data.test}}</p>
+    <div class="container" id="content-area">
+
+      <!-- Chat room area -->
+      <div class="chat-area">
+        
+      </div>
+
+      <!-- User input form  -->
+      <div id="input-area">
+        <form>
+          <div class="form-row">
+            <div class="form-group col-11" id="input-container">
+              <input required type="text" class="form-control" id="user-input" placeholder="Enter your response">
+            </div>
+            <button type="submit" class="btn btn-primary mb-3 col-1">Send</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
 
     <script src="{{ url_for('static', filename='dist/home.js') }}"></script>
   </body>

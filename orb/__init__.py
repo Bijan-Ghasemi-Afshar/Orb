@@ -2,6 +2,7 @@ import os
 
 from flask import (Flask, render_template)
 from flask_pymongo import PyMongo
+from time import sleep
 
 
 def create_app(test_config=None):
@@ -27,11 +28,17 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # a simple page that says hello
+    # Home page
     @app.route('/')
     def hello():
         # test_data = mongo.db.testDoc.find_one_or_404()
         # return render_template('home.html', test_data=test_data)
         return render_template('home.html')
+
+    # Process user input and respond
+    @app.route('/process')
+    def process():
+        sleep(2)
+        return "Hello there"
 
     return app

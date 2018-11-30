@@ -1,8 +1,8 @@
 import os
-
-from flask import (Flask, render_template)
+from flask import (Flask, render_template, request)
 from flask_pymongo import PyMongo
 from time import sleep
+from orb import convo as orbb
 
 
 def create_app(test_config=None):
@@ -33,12 +33,14 @@ def create_app(test_config=None):
     def hello():
         # test_data = mongo.db.testDoc.find_one_or_404()
         # return render_template('home.html', test_data=test_data)
-        return render_template('home.html')
+        chat_instruction, orb_init = orbb.initiate()
+        return render_template('home.html', chat_instruction=chat_instruction, orb_init=orb_init)
 
     # Process user input and respond
-    @app.route('/process')
+    @app.route('/process', methods=['GET'])
     def process():
         sleep(2)
-        return "Hello there"
+        orb_response = orbb.chat_respond(request.args.get('user_input'))
+        return orb_response
 
     return app

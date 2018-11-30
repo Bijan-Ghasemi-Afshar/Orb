@@ -37,7 +37,7 @@ function sendRequest(userInput){
 		url: '/process',
 		type: 'GET',
 		dataType: 'text',
-		data: userInput,
+		data: {"user_input": userInput},
 	})
 	.done(function(data) {		
 		saveBotChat(data);

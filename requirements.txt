@@ -10,3 +10,4 @@ keras
 hmmlearn
 pypi
 csvkit
+nltk

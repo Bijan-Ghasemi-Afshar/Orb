@@ -1,2 +1,12 @@
 Flask
 Flask-PyMongo
+matplotlib
+numpy
+opencv
+tensorflow
+sklearn
+conda-forge scikit-learn
+keras
+hmmlearn
+pypi
+csvkit

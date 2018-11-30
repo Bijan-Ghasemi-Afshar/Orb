@@ -40,11 +40,11 @@ def myEngine():
 
     chat()
 
-if __name__ == '__main__':
-    for engine in [ 'ORB','eliza']:
-        print("=== demo of {} ===".format(engine))
-        #myEngine().chat()
-        builtinEngines(engine)
-        print()
+# if __name__ == '__main__':
+#     for engine in [ 'ORB','eliza']:
+#         print("=== demo of {} ===".format(engine))
+#         #myEngine().chat()
+#         builtinEngines(engine)
+#         print()
 
-myEngine()
+# myEngine()

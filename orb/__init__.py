@@ -40,7 +40,11 @@ def create_app(test_config=None):
     @app.route('/process', methods=['GET'])
     def process():
         sleep(2)
-        orb_response = orbb.chat_respond(request.args.get('user_input'))
+        user_input = request.args.get('user_input').lower()
+        orb_response = orbb.chat_respond(user_input)
+        print(user_input)
+        station = mongo.db.trainStations.find_one_or_404({"name": user_input})
+        print(station["abbreviation"])
         return orb_response
 
     return app

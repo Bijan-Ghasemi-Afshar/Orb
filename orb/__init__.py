@@ -1,8 +1,9 @@
-import os
+import os, re
 from flask import (Flask, render_template, request)
 from flask_pymongo import PyMongo
 from time import sleep
-from orb import convo as orbb
+from orb.KB import convo as orb_bot
+from orb.KB import chat_state_classifier
 
 
 def create_app(test_config=None):
@@ -28,23 +29,31 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # Home page
+    # Home page & initiate the chat with instructions
     @app.route('/')
     def hello():
-        # test_data = mongo.db.testDoc.find_one_or_404()
-        # return render_template('home.html', test_data=test_data)
-        chat_instruction, orb_init = orbb.initiate()
+        chat_instruction, orb_init = orb_bot.initiate()
         return render_template('home.html', chat_instruction=chat_instruction, orb_init=orb_init)
 
-    # Process user input and respond
+    # User chats with orb; process it; respond to it;
     @app.route('/process', methods=['GET'])
     def process():
+
         sleep(2)
-        user_input = request.args.get('user_input').lower()
-        orb_response = orbb.chat_respond(user_input)
-        print(user_input)
-        station = mongo.db.trainStations.find_one_or_404({"name": user_input})
-        print(station["abbreviation"])
+        
+        user_input = normalize_input(request.args.get('user_input'))
+
+        chat_state = chat_state_classifier.classify_chat(user_input)
+
+        orb_response = chat_state.response(user_input)
+
         return orb_response
+
+
+    def normalize_input(user_input):
+        user_input = user_input.lower()
+        return re.sub('[^A-Za-z0-9]+', ' ', user_input)
+        
+
 
     return app

@@ -467,11 +467,19 @@ def ORB_chat():
     print('=' * 72)
     print("Hello. I am ORB and how may I assist you? Perhaps you would like to book a train?")
 
-    ORB_chatbot.converse()
+    # ORB_chatbot.converse()
 
+def initiate():
+    chat_instruction = "Talk to ORB by typing in plain English, using normal upper-\nand lower-case letters and punctuation.  Enter \"quit\" when done."
+    init_chat = "Hello. I am ORB and how may I assist you? Perhaps you would like to book a train?"
+    return chat_instruction, init_chat
+
+def chat_respond(user_input):
+    response = ORB_chatbot.respond(user_input)
+    return response
 
 def demo():
     ORB_chat()
 
-if __name__ == "__main__":
-    demo()
+# if __name__ == "__main__":
+#     demo()

@@ -1,14 +1,14 @@
 import pymongo
 
-# Setup connection
+# Setup connection to the database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 orb_database = client["orbDatabase"]
 
 answers = {
 	'origin' 		: "NRW",
 	'destination' 	: None,
-	'date' 			: "16/12/2018",
-	'time' 			: "18:00",
+	'date' 			: "10/01/2019",
+	'time' 			: "15:00",
 	'single' 		: False	
 }
 
@@ -28,11 +28,23 @@ def response(user_input):
 		return "All questions are answered"
 	else:		
 
+		# TODO: The ticket_KB must be implemented to extract ticket information and pass them here
+		# Ticket engine shuold send a request to its KB to extract information about the ticket and validates them here
+		# Returned: a dictionary of answers and answer types which will be validated
+
 		current_question_type, current_question = get_current_question()
 
-		direct_to_right_validation(current_question_type, user_input)
+		# This part needs to go into a loop to make sure all answers are checked (START)
 
-		return current_question
+		if input_is_valid(current_question_type, user_input):
+
+			answers[current_question_type] = user_input
+			return next_question()
+
+		else:	# If current question is not answered, repeat the question
+			return current_question
+		
+		# This part needs to go into a loop to make sure all answers are checked (END)
 
 def all_questions_answered():
 
@@ -47,25 +59,18 @@ def get_current_question():
 		if value == None:
 			return key, questions[key]			
 
-def direct_to_right_validation(current_question_type, user_input):
+def input_is_valid(current_question_type, user_input):
 
 	if current_question_type 	== 'origin':
-		pass
+		return False
 	elif current_question_type 	== 'destination':
-		
-		if vaildate_destination(user_input):
-			print("destination is valid")
-			next_question()
-		else:
-			print("destination is not valid")
-			repeat_question()
-
+		return vaildate_destination(user_input)
 	elif current_question_type 	== 'date':
-		pass
+		return False
 	elif current_question_type 	== 'time':
-		pass
+		return False
 	else: # current_question_type == 'single'
-		pass	
+		return False
 
 def vaildate_destination(user_input):
 	station_abr = get_station_abr(user_input)
@@ -87,10 +92,12 @@ def get_station_abr(station_name):
 		return None
 
 def next_question():
-	pass
-
-def repeat_question():
-	pass
+	if all_questions_answered():
+		# Needs to send to web-scraping and give back some results
+		return "No more questions left"
+	else:
+		current_question_type, current_question = get_current_question()
+		return current_question	
 
 def construct_url(origin, destincation, date, time):
 	return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep".format(origin, destincation, date, time)        

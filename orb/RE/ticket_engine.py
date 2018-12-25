@@ -20,51 +20,43 @@ questions = {
 	'single'		: 'Would you like to book a return ticket?'
 }
 
-current_question = current_question_type = None
+user_answers = {
+	'destination' 	: None
+}
 
 def response(user_input):
 
+	# TODO: This part will make a request to ticket_KB to get ticket information as a dictionary
+	user_answers['destination'] = user_input
+
 	if all_questions_answered():
-		return "All questions are answered"
-	else:		
-
-		# TODO: The ticket_KB must be implemented to extract ticket information and pass them here
-		# Ticket engine shuold send a request to its KB to extract information about the ticket and validates them here
-		# Returned: a dictionary of answers and answer types which will be validated
-
-		current_question_type, current_question = get_current_question()
-
-		# This part needs to go into a loop to make sure all answers are checked (START)
-
-		if input_is_valid(current_question_type, user_input):
-
-			answers[current_question_type] = user_input
-			return next_question()
-
-		else:	# If current question is not answered, repeat the question
-			return current_question
-		
-		# This part needs to go into a loop to make sure all answers are checked (END)
+		return "All questions are answered"		# Has to assume the input is about confirmation of the ticket
+	else:
+		for current_question_type in questions:
+			if answers[current_question_type] == None:
+				if input_is_valid(current_question_type, user_answers):
+					answers[current_question_type] = user_answers[current_question_type]
+		# Check again to see if all questions are answered
+		if all_questions_answered():
+			return "All questions are answered"
+			pass # Send to web-scrape
+		else:
+			return get_current_question()
+						
 
 def all_questions_answered():
-
 	for key in answers:		
 		if answers[key] == None:
 			return False
 
 	return True
 
-def get_current_question():
-	for key, value in answers.items():
-		if value == None:
-			return key, questions[key]			
-
-def input_is_valid(current_question_type, user_input):
+def input_is_valid(current_question_type, user_answers):
 
 	if current_question_type 	== 'origin':
 		return False
 	elif current_question_type 	== 'destination':
-		return vaildate_destination(user_input)
+		return vaildate_destination(user_answers[current_question_type])
 	elif current_question_type 	== 'date':
 		return False
 	elif current_question_type 	== 'time':
@@ -91,13 +83,10 @@ def get_station_abr(station_name):
 	else:
 		return None
 
-def next_question():
-	if all_questions_answered():
-		# Needs to send to web-scraping and give back some results
-		return "No more questions left"
-	else:
-		current_question_type, current_question = get_current_question()
-		return current_question	
+def get_current_question():
+	for current_question_type in questions:
+		if answers[current_question_type] == None:
+			return questions[current_question_type]
 
 def construct_url(origin, destincation, date, time):
 	return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep".format(origin, destincation, date, time)        

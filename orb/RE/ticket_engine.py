@@ -1,4 +1,4 @@
-import pymongo, datetime
+import pymongo, datetime, time
 
 # Setup connection to the database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -7,8 +7,8 @@ orb_database = client["orbDatabase"]
 answers = {
 	'origin' 		: "NRW",
 	'destination' 	: "LST",
-	'date' 			: None,
-	'time' 			: "15:00",
+	'date' 			: "12/02/2019",
+	'time' 			: None,
 	'single' 		: False	
 }
 
@@ -23,13 +23,15 @@ questions = {
 user_answers = {
 	'origin'		: None,
 	'destination' 	: None,
-	'date'			: None
+	'date'			: None,
+	'time'			: None,
+	'single'		: False
 }
 
 def response(user_input):
 
 	# TODO: This part will make a request to ticket_KB to get ticket information as a dictionary
-	user_answers['date'] = user_input
+	user_answers['time'] = user_input
 
 	if all_questions_answered():
 		return "All questions are answered"		# Has to assume the input is about confirmation of the ticket
@@ -62,7 +64,7 @@ def input_is_valid(current_question_type, user_answers):	# TODO: Add validation 
 	elif current_question_type 	== 'date':
 		return validate_date(user_answers[current_question_type])
 	elif current_question_type 	== 'time':
-		return False
+		return validate_time(user_answers[current_question_type])
 	else: # current_question_type == 'single'
 		return False
 
@@ -88,16 +90,41 @@ def validate_destination(user_input):
 
 def validate_date(user_input):
 	date_format = "%d/%m/%Y"
+	time_format = "%H:%M"
 	try:
 		date_object = datetime.datetime.strptime(user_input, date_format)
 		if date_object.date() < datetime.datetime.today().date():
-			 print("Date provided cannot be in the past")
-			 return False
+			print("Date provided cannot be in the past")
+			return False
+		elif date_object.date() == datetime.datetime.today().date() and answers['time'] != None:
+			time_object = datetime.datetime.strptime(answers['time'], time_format).time()
+			if time_object < datetime.datetime.now().time():
+				print("Time provided cannot be in the past")
+				return False
+			else:
+				return True
 		else:
 			return True
 	except ValueError:
 		print("Date provided is not in the correct format")
 	return False
+
+def validate_time(user_input):
+	date_format = "%d/%m/%Y"
+	time_format = "%H:%M"
+	try:
+		time_object = datetime.datetime.strptime(user_input, time_format).time()
+		
+		if answers['date'] != None:
+			date_object = datetime.datetime.strptime(answers['date'], date_format)
+			if date_object.date() == datetime.datetime.today().date() and time_object < datetime.datetime.now().time():
+				print("Time provided cannot be in the past")
+				return False
+
+		return True
+	except ValueError:
+		print("There was an issue with the time format")
+		return False
 
 def get_station_abr(station_name):
 	result = orb_database.trainStations.find_one({"name": station_name})
@@ -112,4 +139,5 @@ def get_current_question():
 			return questions[current_question_type]
 
 def construct_url(origin, destincation, date, time):
+	# TODO: Use the answers dictionary and remove slash and colon from date and time to construct url
 	return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep".format(origin, destincation, date, time)        

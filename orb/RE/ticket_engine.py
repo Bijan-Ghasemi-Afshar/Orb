@@ -8,7 +8,7 @@ answers = {
 	'origin' 		: "NRW",
 	'destination' 	: "LST",
 	'date' 			: "12/02/2019",
-	'time' 			: None,
+	'time' 			: "12:12",
 	'single' 		: False	
 }
 
@@ -25,17 +25,20 @@ user_answers = {
 	'destination' 	: None,
 	'date'			: None,
 	'time'			: None,
-	'single'		: False
+	'single'		: None,
+	'return_date'	: "12/02/2019",
+	'return_time'	: None
 }
 
 def response(user_input):
 
 	# TODO: This part will make a request to ticket_KB to get ticket information as a dictionary
-	user_answers['time'] = user_input
+	# user_answers['return_date'] = user_input
 
 	if all_questions_answered():
 		return "All questions are answered"		# Has to assume the input is about confirmation of the ticket
 	else:
+		user_answers['return_time'] = user_input
 		for current_question_type in questions:
 			if answers[current_question_type] == None:
 				if input_is_valid(current_question_type, user_answers):					
@@ -49,7 +52,14 @@ def response(user_input):
 						
 
 def all_questions_answered():
-	for key in answers:		
+
+	# If it is a return ticket add extra questions and question types
+	if answers['single'] and 'return_date' not in answers:
+		answers['return_date'] = answers['return_time'] = None
+		questions['return_date'] = "What is the date that you would like to return?"
+		questions['return_time'] = "What is the time that you would like to return?"
+
+	for key in answers:
 		if answers[key] == None:
 			return False
 
@@ -65,8 +75,12 @@ def input_is_valid(current_question_type, user_answers):	# TODO: Add validation 
 		return validate_date(user_answers[current_question_type])
 	elif current_question_type 	== 'time':
 		return validate_time(user_answers[current_question_type])
+	elif current_question_type 	== 'return_date':
+		return validate_return_date(user_answers[current_question_type])
+	elif current_question_type 	== 'return_time':
+		return validate_return_time(user_answers[current_question_type])
 	else: # current_question_type == 'single'
-		return False
+		return validate_return(user_answers[current_question_type])
 
 def validate_origin(user_input):
 	station_abr = get_station_abr(user_input)
@@ -119,6 +133,58 @@ def validate_time(user_input):
 			date_object = datetime.datetime.strptime(answers['date'], date_format)
 			if date_object.date() == datetime.datetime.today().date() and time_object < datetime.datetime.now().time():
 				print("Time provided cannot be in the past")
+				return False
+
+		return True
+	except ValueError:
+		print("There was an issue with the time format")
+		return False
+
+def validate_return(user_input):
+	if 'yes' in user_input:
+		user_answers['single'] = True
+		return True
+	elif 'no' in user_input:
+		user_answers['single'] = False
+		return True
+	else:
+		return False
+
+def validate_return_date(user_input):
+	date_format = "%d/%m/%Y"
+	time_format = "%H:%M"
+	try:
+		departure_date_object = datetime.datetime.strptime(answers['date'], date_format)
+		return_date_object = datetime.datetime.strptime(user_input, date_format)
+		if return_date_object.date() < departure_date_object.date():
+			print("Return date cannot be before the departure")
+			return False
+		elif return_date_object.date() == departure_date_object.date() and answers['return_time'] != None:
+			departure_time_object = datetime.datetime.strptime(answers['time'], time_format).time()
+			return_time_object = datetime.datetime.strptime(answers['return_time'], time_format).time()
+			if return_time_object <= departure_time_object:
+				print("Retrun time cannot be before the departure")
+				return False
+			else:
+				return True
+		else:
+			return True
+	except ValueError:
+		print("Date provided is not in the correct format")
+	return False
+
+def validate_return_time(user_input):
+	date_format = "%d/%m/%Y"
+	time_format = "%H:%M"
+	try:
+		departure_time_object = datetime.datetime.strptime(answers['time'], time_format).time()
+		return_time_object = datetime.datetime.strptime(user_input, time_format).time()
+		
+		if answers['return_date'] != None:
+			departure_date_object = datetime.datetime.strptime(answers['date'], date_format)
+			return_date_object = datetime.datetime.strptime(answers['return_date'], date_format)
+			if return_date_object.date() == departure_date_object.date() and return_time_object <= departure_time_object:
+				print("Retrun time cannot be before the departure")
 				return False
 
 		return True

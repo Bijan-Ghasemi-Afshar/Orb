@@ -52,7 +52,7 @@ def create_app(test_config=None):
 
     def normalize_input(user_input):
         user_input = user_input.lower()
-        return re.sub('[^A-Za-z0-9]+', ' ', user_input)
+        return re.sub('[^A-Za-z0-9/]+', ' ', user_input)
         
 
 

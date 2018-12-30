@@ -1,13 +1,13 @@
-import pymongo
+import pymongo, datetime
 
 # Setup connection to the database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 orb_database = client["orbDatabase"]
 
 answers = {
-	'origin' 		: None,
-	'destination' 	: None,
-	'date' 			: "10/01/2019",
+	'origin' 		: "NRW",
+	'destination' 	: "LST",
+	'date' 			: None,
 	'time' 			: "15:00",
 	'single' 		: False	
 }
@@ -22,13 +22,14 @@ questions = {
 
 user_answers = {
 	'origin'		: None,
-	'destination' 	: None
+	'destination' 	: None,
+	'date'			: None
 }
 
 def response(user_input):
 
 	# TODO: This part will make a request to ticket_KB to get ticket information as a dictionary
-	user_answers['origin'] = user_input
+	user_answers['date'] = user_input
 
 	if all_questions_answered():
 		return "All questions are answered"		# Has to assume the input is about confirmation of the ticket
@@ -59,7 +60,7 @@ def input_is_valid(current_question_type, user_answers):	# TODO: Add validation 
 	elif current_question_type 	== 'destination':
 		return validate_destination(user_answers[current_question_type])
 	elif current_question_type 	== 'date':
-		return False
+		return validate_date(user_answers[current_question_type])
 	elif current_question_type 	== 'time':
 		return False
 	else: # current_question_type == 'single'
@@ -84,6 +85,19 @@ def validate_destination(user_input):
 		else:
 			print("Destination cannot be the same as origin")
 			return False
+
+def validate_date(user_input):
+	date_format = "%d/%m/%Y"
+	try:
+		date_object = datetime.datetime.strptime(user_input, date_format)
+		if date_object.date() < datetime.datetime.today().date():
+			 print("Date provided cannot be in the past")
+			 return False
+		else:
+			return True
+	except ValueError:
+		print("Date provided is not in the correct format")
+	return False
 
 def get_station_abr(station_name):
 	result = orb_database.trainStations.find_one({"name": station_name})

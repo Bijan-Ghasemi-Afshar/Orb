@@ -5,7 +5,7 @@ client = pymongo.MongoClient("mongodb://localhost:27017/")
 orb_database = client["orbDatabase"]
 
 answers = {
-	'origin' 		: "NRW",
+	'origin' 		: None,
 	'destination' 	: None,
 	'date' 			: "10/01/2019",
 	'time' 			: "15:00",
@@ -21,20 +21,21 @@ questions = {
 }
 
 user_answers = {
+	'origin'		: None,
 	'destination' 	: None
 }
 
 def response(user_input):
 
 	# TODO: This part will make a request to ticket_KB to get ticket information as a dictionary
-	user_answers['destination'] = user_input
+	user_answers['origin'] = user_input
 
 	if all_questions_answered():
 		return "All questions are answered"		# Has to assume the input is about confirmation of the ticket
 	else:
 		for current_question_type in questions:
 			if answers[current_question_type] == None:
-				if input_is_valid(current_question_type, user_answers):
+				if input_is_valid(current_question_type, user_answers):					
 					answers[current_question_type] = user_answers[current_question_type]
 		# Check again to see if all questions are answered
 		if all_questions_answered():
@@ -51,12 +52,12 @@ def all_questions_answered():
 
 	return True
 
-def input_is_valid(current_question_type, user_answers):
+def input_is_valid(current_question_type, user_answers):	# TODO: Add validation to other question types and answers
 
 	if current_question_type 	== 'origin':
-		return False
+		return validate_origin(user_answers[current_question_type])
 	elif current_question_type 	== 'destination':
-		return vaildate_destination(user_answers[current_question_type])
+		return validate_destination(user_answers[current_question_type])
 	elif current_question_type 	== 'date':
 		return False
 	elif current_question_type 	== 'time':
@@ -64,7 +65,15 @@ def input_is_valid(current_question_type, user_answers):
 	else: # current_question_type == 'single'
 		return False
 
-def vaildate_destination(user_input):
+def validate_origin(user_input):
+	station_abr = get_station_abr(user_input)
+	if station_abr == None:
+		print("No station was found!")
+		return False
+	else:
+		return True	
+
+def validate_destination(user_input):
 	station_abr = get_station_abr(user_input)
 	if station_abr == None:
 		print("No station was found!")

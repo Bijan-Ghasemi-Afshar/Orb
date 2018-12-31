@@ -11,10 +11,10 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        # MONGO_URI="mongodb://localhost:27017/orbDatabase"
+        MONGO_URI="mongodb://localhost:27017/orbDatabase"
         # DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
-    # mongo=PyMongo(app)
+    mongo=PyMongo(app)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing

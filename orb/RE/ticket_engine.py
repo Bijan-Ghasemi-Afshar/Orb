@@ -1,4 +1,5 @@
-import pymongo, datetime, time
+import pymongo, datetime, time, requests, re
+from bs4 import BeautifulSoup
 
 # Setup connection to the database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -26,8 +27,9 @@ user_answers = {
 	'date'			: None,
 	'time'			: None,
 	'single'		: None,
-	'return_date'	: "12/02/2019",
-	'return_time'	: None
+	'return_date'	: None,
+	'return_time'	: None,
+	'confirm_ticket': None
 }
 
 def response(user_input):
@@ -36,17 +38,18 @@ def response(user_input):
 	# user_answers['return_date'] = user_input
 
 	if all_questions_answered():
-		return "All questions are answered"		# Has to assume the input is about confirmation of the ticket
+		user_answers['confirm_ticket'] = user_input
+		return get_ticket_information()
 	else:
-		user_answers['return_time'] = user_input
+		user_answers['origin'] = user_input
 		for current_question_type in questions:
 			if answers[current_question_type] == None:
 				if input_is_valid(current_question_type, user_answers):					
 					answers[current_question_type] = user_answers[current_question_type]
+					
 		# Check again to see if all questions are answered
 		if all_questions_answered():
-			return "All questions are answered"
-			pass # Send to web-scrape
+			return get_ticket_information()
 		else:
 			return get_current_question()
 						
@@ -204,6 +207,48 @@ def get_current_question():
 		if answers[current_question_type] == None:
 			return questions[current_question_type]
 
-def construct_url(origin, destincation, date, time):
-	# TODO: Use the answers dictionary and remove slash and colon from date and time to construct url
-	return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep".format(origin, destincation, date, time)        
+def get_ticket_information():
+	ticket_url_request = construct_ticket_url()
+	print(ticket_url_request)
+
+	# Sending a GET request to get ticket information
+	r = requests.get(ticket_url_request)
+	html_results = BeautifulSoup(r.text, 'html.parser')
+
+	# Get cheapest ticket price
+	matches = html_results.findAll("label", class_="opsingle")
+	ticket_prices = []
+	for match in matches:
+		ticket_price = ''.join(match.findAll(text=True))
+		ticket_prices.append(re.sub('[^0-9]+', '.', ticket_price))
+
+	cheapest_ticket = ticket_prices[0]
+
+	# Get departure time for the cheapest ticket
+	matches = html_results.findAll("td", class_="dep")
+	departure_times = []
+	for match in matches:
+		departure_time = ''.join(match.findAll(text=True))
+		departure_times.append(re.sub('[^0-9]+', ':', departure_time))
+
+	dep_time_for_cheapest = departure_times[0]
+
+
+	# Get arrival time for the cheapest ticket
+	matches = html_results.findAll("td", class_="arr")
+	arrival_times = []
+	for match in matches:
+		arrival_time = ''.join(match.findAll(text=True))
+		arrival_times.append(re.sub('[^0-9]+', ':', arrival_time))
+
+	arr_time_for_cheapest = arrival_times[0]
+
+	ticket_result = "Cheapest ticket price of £{0} which departs at {1} and arrives at {2}. Would you like this ticket?".format(cheapest_ticket, dep_time_for_cheapest, arr_time_for_cheapest)
+
+	return ticket_result
+
+def construct_ticket_url():
+	date_object = datetime.datetime.strptime(answers['date'], "%d/%m/%Y").date()
+	date_url_format = date_object.strftime("%d%m%y")
+	time_url_format = answers['time'].replace(':', '')
+	return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep".format(answers['origin'], answers['destination'], date_url_format, time_url_format)

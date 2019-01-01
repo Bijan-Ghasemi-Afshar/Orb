@@ -1,4 +1,4 @@
-import pymongo, datetime, time, requests, re
+import pymongo, datetime, time, requests, re, json
 from bs4 import BeautifulSoup
 
 # Setup connection to the database
@@ -6,11 +6,13 @@ client = pymongo.MongoClient("mongodb://localhost:27017/")
 orb_database = client["orbDatabase"]
 
 answers = {
-	'origin' 		: "NRW",
+	'origin' 		: None,
 	'destination' 	: "LST",
-	'date' 			: "12/02/2019",
+	'date' 			: "14/02/2019",
 	'time' 			: "12:12",
-	'single' 		: False	
+	'single' 		: False, 
+	'return_date'	: "17/02/2019",
+	'return_time'	: "12:12"
 }
 
 questions = {
@@ -24,12 +26,11 @@ questions = {
 user_answers = {
 	'origin'		: None,
 	'destination' 	: None,
-	'date'			: None,
-	'time'			: None,
-	'single'		: None,
+	'date' 			: None,
+	'time' 			: None,
+	'single' 		: None,
 	'return_date'	: None,
-	'return_time'	: None,
-	'confirm_ticket': None
+	'return_time'	: None
 }
 
 def response(user_input):
@@ -38,12 +39,11 @@ def response(user_input):
 	# user_answers['return_date'] = user_input
 
 	if all_questions_answered():
-		user_answers['confirm_ticket'] = user_input
-		return get_ticket_information()
+		return handle_user_confirmation(user_input)
 	else:
 		user_answers['origin'] = user_input
 		for current_question_type in questions:
-			if answers[current_question_type] == None:
+			if answers[current_question_type] is None and user_answers[current_question_type] is not None:
 				if input_is_valid(current_question_type, user_answers):					
 					answers[current_question_type] = user_answers[current_question_type]
 					
@@ -57,7 +57,7 @@ def response(user_input):
 def all_questions_answered():
 
 	# If it is a return ticket add extra questions and question types
-	if answers['single'] and 'return_date' not in answers:
+	if not answers['single'] and 'return_date' not in answers:
 		answers['return_date'] = answers['return_time'] = None
 		questions['return_date'] = "What is the date that you would like to return?"
 		questions['return_time'] = "What is the time that you would like to return?"
@@ -215,40 +215,55 @@ def get_ticket_information():
 	r = requests.get(ticket_url_request)
 	html_results = BeautifulSoup(r.text, 'html.parser')
 
-	# Get cheapest ticket price
-	matches = html_results.findAll("label", class_="opsingle")
-	ticket_prices = []
-	for match in matches:
-		ticket_price = ''.join(match.findAll(text=True))
-		ticket_prices.append(re.sub('[^0-9]+', '.', ticket_price))
+	outbound_tickets = html_results.find("table", {"id": "oft"})
+	outbound_tickets = outbound_tickets.findAll("td", class_="has-cheapest")[0]
+	ticket_data = outbound_tickets.find('script')
+	ticket_data = ''.join(ticket_data.findAll(text=True))
+	ticket_data = json.loads(ticket_data)
+	out_ticket_price = ticket_data['singleJsonFareBreakdowns'][0]['fullFarePrice']
+	out_ticket_dep_time = ticket_data['jsonJourneyBreakdown']['departureTime']
+	out_ticket_arr_time = ticket_data['jsonJourneyBreakdown']['arrivalTime']
 
-	cheapest_ticket = ticket_prices[0]
-
-	# Get departure time for the cheapest ticket
-	matches = html_results.findAll("td", class_="dep")
-	departure_times = []
-	for match in matches:
-		departure_time = ''.join(match.findAll(text=True))
-		departure_times.append(re.sub('[^0-9]+', ':', departure_time))
-
-	dep_time_for_cheapest = departure_times[0]
-
-
-	# Get arrival time for the cheapest ticket
-	matches = html_results.findAll("td", class_="arr")
-	arrival_times = []
-	for match in matches:
-		arrival_time = ''.join(match.findAll(text=True))
-		arrival_times.append(re.sub('[^0-9]+', ':', arrival_time))
-
-	arr_time_for_cheapest = arrival_times[0]
-
-	ticket_result = "Cheapest ticket price of £{0} which departs at {1} and arrives at {2}. Would you like this ticket?".format(cheapest_ticket, dep_time_for_cheapest, arr_time_for_cheapest)
+	if not answers['single']:
+		return_ticket = html_results.find("table", {"id": "ift"})
+		return_ticket = return_ticket.findAll("td", class_="has-cheapest")[0]
+		ticket_data = return_ticket.find('script')
+		ticket_data = ''.join(ticket_data.findAll(text=True))
+		ticket_data = re.sub('%s', '', ticket_data)
+		ticket_data = json.loads(ticket_data)
+		ret_ticket_price = ticket_data['singleJsonFareBreakdowns'][0]['fullFarePrice']
+		ret_ticket_dep_time = ticket_data['jsonJourneyBreakdown']['departureTime']
+		ret_ticket_arr_time = ticket_data['jsonJourneyBreakdown']['arrivalTime']
+		ticket_result = "Outbound ticket price of £{0} which departs at {1} and arrives at {2} and a return ticket with price of £{3} which departs at {4} and arrives at {5} have been found. Would you like these tickets?".format(out_ticket_price, out_ticket_dep_time, out_ticket_arr_time, ret_ticket_price, ret_ticket_dep_time, ret_ticket_arr_time)
+	else:
+		ticket_result = "Cheapest ticket price of £{0} which departs at {1} and arrives at {2}. Would you like this ticket?".format(out_ticket_price, out_ticket_dep_time, out_ticket_arr_time)
 
 	return ticket_result
+
+def handle_user_confirmation(user_input):
+	if 'yes' in user_input:
+		ticket_link = "<a href=\"{0}\" target=\"_blank\">Ticket</a>".format(construct_ticket_url())
+		reset_answers()
+		return ticket_link
+	elif 'no' in user_input:
+		reset_answers()
+		return "Ok, thank you for using me"
+	else:
+		return "Would you like this ticket?"
+
+def reset_answers():
+	for answer_type in answers:
+		answers[answer_type] = None
 
 def construct_ticket_url():
 	date_object = datetime.datetime.strptime(answers['date'], "%d/%m/%Y").date()
 	date_url_format = date_object.strftime("%d%m%y")
 	time_url_format = answers['time'].replace(':', '')
-	return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep".format(answers['origin'], answers['destination'], date_url_format, time_url_format)
+
+	if not answers['single']:
+		date_object = datetime.datetime.strptime(answers['return_date'], "%d/%m/%Y").date()
+		return_date_url_format = date_object.strftime("%d%m%y")
+		return_time_url_format = answers['return_time'].replace(':', '')
+		return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep/{4}/{5}/dep".format(answers['origin'], answers['destination'], date_url_format, time_url_format, return_date_url_format, return_time_url_format)
+	else:
+		return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep".format(answers['origin'], answers['destination'], date_url_format, time_url_format)

@@ -1,0 +1,57 @@
+{
+  "serviceAttributesDetails": {
+    "date_of_service": "2018-11-15",
+    "locations": [
+      {
+        "actual_ta": "",
+        "actual_td": "0645",
+        "gbtt_pta": "",
+        "gbtt_ptd": "0645",
+        "late_canc_reason": "",
+        "location": "NRW"
+      },
+      {
+        "actual_ta": "0703",
+        "actual_td": "0705",
+        "gbtt_pta": "0703",
+        "gbtt_ptd": "0704",
+        "late_canc_reason": "",
+        "location": "DIS"
+      },
+      {
+        "actual_ta": "0717",
+        "actual_td": "0718",
+        "gbtt_pta": "0716",
+        "gbtt_ptd": "0717",
+        "late_canc_reason": "",
+        "location": "SMK"
+      },
+      {
+        "actual_ta": "0729",
+        "actual_td": "0731",
+        "gbtt_pta": "0730",
+        "gbtt_ptd": "0732",
+        "late_canc_reason": "",
+        "location": "IPS"
+      },
+      {
+        "actual_ta": "0742",
+        "actual_td": "0744",
+        "gbtt_pta": "0742",
+        "gbtt_ptd": "0743",
+        "late_canc_reason": "",
+        "location": "MNG"
+      },
+      {
+        "actual_ta": "0841",
+        "actual_td": "",
+        "gbtt_pta": "0842",
+        "gbtt_ptd": "",
+        "late_canc_reason": "",
+        "location": "LST"
+      }
+    ],
+    "rid": "201811157681034",
+    "toc_code": "LE"
+  }
+}

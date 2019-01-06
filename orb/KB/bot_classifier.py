@@ -142,6 +142,8 @@ class BotClassifier:
         trainingData.append({"class":"Model", "sentence":"how often is the train late at Colchester"})
         trainingData.append({"class":"Model", "sentence":"how often is the train late at Hinchley Wood"})
 
+
+        trainingData.append({"class":"Fault", "sentence":"fault"})
         print ("%s sentences of training data" % len(trainingData))
         # print(trainingData)
         # Create unique list
@@ -222,11 +224,14 @@ class BotClassifier:
             print ("Class: %s  Score: %s \n" % (c,  self.calculateCommonValues(sentence, c)))
 
     '''
-    Define the sentence type by scoring using knn
+    Define the sentence type by scoring using knn for conversation class {General, Model, Booking} and confidence
+    returns the sentance class and confidence
     '''
     def classify(self,sentence):
         print("classifying")
         self.train()
+
+        # store the default classifier state
         maxClassification = None
         maxValue = 0
         for c in self.classifyText.keys():
@@ -236,9 +241,34 @@ class BotClassifier:
                 maxClassification = c
                 maxValue = score
 
+            # resets the classifier to the default state of general
+            if maxClassification == None:
+                maxClassification= "General"
+        # return maxClassification
         return maxClassification, maxValue
 
-   
+    '''
+    Define the sentence type by scoring using knn and return only the conversation class {General, Model, Booking}
+    returns the sentance Class
+    '''
+    def classifySentence(self,sentence):
+        print("classifying")
+        self.train()
+
+        # store the default classifier state
+        maxClassification = None
+        maxValue = 0
+        for c in self.classifyText.keys():
+            score = self.calculateCommonValues(sentence, c, show_details=False)
+            
+            if score > maxValue:
+                maxClassification = c
+                maxValue = score
+
+            # resets the classifier to the default state of general
+            if maxClassification == None:
+                maxClassification= "General"
+        return maxClassification
     
 
 def main():
@@ -248,7 +278,10 @@ def main():
     
     p = bot.classify("fly plane")
     print("plane: "+ str(p))
-    bot.testClassifier()
+    # bot.testClassifier()
+
+    f=bot.classify("a fault")
+    print(str(f))
 if __name__ == "__main__":
     bot = BotClassifier()
     main()

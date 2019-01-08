@@ -14,4 +14,6 @@ route historical performance:
 
 '''
 
-class TrainNN():
+class TrainNN(object):
+
+    def __init__(self):

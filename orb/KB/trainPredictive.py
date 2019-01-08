@@ -15,3 +15,4 @@ The model takes in the know data (historical data), known outputs(delays) then g
 To reinforce the model delay calculations are also added in a naive implementation of the generated model.
 '''
 class TrainPredictive():
+    def __init__(self):

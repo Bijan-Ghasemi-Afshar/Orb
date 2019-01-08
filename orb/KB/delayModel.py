@@ -18,4 +18,4 @@ class DelayModel():
     # advanced> orb retuns new arrival time based on DNN class TrainNN()
 
     # add provision for broken down train with UNKNOWN delay
-    
+    def __init__(self):

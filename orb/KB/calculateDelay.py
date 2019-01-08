@@ -3,4 +3,4 @@ Class that calculates the actual arrival time of the train object based on expec
 '''
 
 class CalculateDelay():
-    
+    def __init__(self):

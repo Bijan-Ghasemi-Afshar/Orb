@@ -142,8 +142,13 @@ class BotClassifier:
         trainingData.append({"class":"Model", "sentence":"how often is the train late at Colchester"})
         trainingData.append({"class":"Model", "sentence":"how often is the train late at Hinchley Wood"})
 
-
+        # addidition classifer to detect a reported fault
         trainingData.append({"class":"Fault", "sentence":"fault"})
+        trainingData.append({"class":"Fault", "sentence":"not working"})
+        trainingData.append({"class":"Fault", "sentence":"broken"})
+        trainingData.append({"class":"Fault", "sentence":"open fault"})
+        trainingData.append({"class":"Fault", "sentence":"report issue"})
+        trainingData.append({"class":"Fault", "sentence":"damaged"})
         print ("%s sentences of training data" % len(trainingData))
         # print(trainingData)
         # Create unique list

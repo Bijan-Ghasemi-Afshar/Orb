@@ -1,5 +1,6 @@
 import pymongo, datetime, time, requests, re, json
 from bs4 import BeautifulSoup
+from orb.KB import nltk_bag_of_words as ticket_kb
 
 # Setup connection to the database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -7,12 +8,10 @@ orb_database = client["orbDatabase"]
 
 answers = {
 	'origin' 		: None,
-	'destination' 	: "LST",
-	'date' 			: "14/02/2019",
-	'time' 			: "12:12",
-	'single' 		: False, 
-	'return_date'	: "17/02/2019",
-	'return_time'	: "12:12"
+	'destination' 	: None,
+	'date' 			: None,
+	'time' 			: None,
+	'single' 		: None 
 }
 
 questions = {
@@ -20,7 +19,7 @@ questions = {
 	'destination' 	: 'What is your destination?',
 	'date'			: 'What day are you traveling?',
 	'time'			: 'What time would you like to leave?',
-	'single'		: 'Would you like to book a return ticket?'
+	'single'		: 'Would you like a single or return ticket?'
 }
 
 user_answers = {
@@ -28,37 +27,60 @@ user_answers = {
 	'destination' 	: None,
 	'date' 			: None,
 	'time' 			: None,
-	'single' 		: None,
-	'return_date'	: None,
-	'return_time'	: None
+	'single' 		: None
 }
 
 def response(user_input):
 
-	# TODO: This part will make a request to ticket_KB to get ticket information as a dictionary
-	# user_answers['return_date'] = user_input
+	bag = ticket_kb.Bag_of_words(user_input)
+	hold_facts = bag.read_vocab()
+
+	for answer_type in user_answers:
+		if answers['single'] is not None and not answers['single']:
+
+			if answer_type == 'date':
+				if answers[answer_type] is not None:
+					user_answers['return_date'] = hold_facts[answer_type]
+				else:
+					user_answers[answer_type] = hold_facts[answer_type]
+				
+			elif answer_type == 'time':
+				if answers[answer_type] is not None:
+					user_answers['return_time'] = hold_facts[answer_type]
+				else:
+					user_answers[answer_type] = hold_facts[answer_type]
+
+			elif answer_type == 'single':
+				user_answers[answer_type] = 'no'
+			elif answer_type == 'return_date' or answer_type == 'return_time':
+				next
+			else:
+				user_answers[answer_type] = hold_facts[answer_type]
+			
+		else:
+			user_answers[answer_type] = hold_facts[answer_type]	
 
 	if all_questions_answered():
 		return handle_user_confirmation(user_input)
 	else:
-		user_answers['origin'] = user_input
 		for current_question_type in questions:
 			if answers[current_question_type] is None and user_answers[current_question_type] is not None:
 				if input_is_valid(current_question_type, user_answers):					
 					answers[current_question_type] = user_answers[current_question_type]
-					
+
 		# Check again to see if all questions are answered
 		if all_questions_answered():
 			return get_ticket_information()
 		else:
 			return get_current_question()
-						
+
 
 def all_questions_answered():
 
 	# If it is a return ticket add extra questions and question types
-	if not answers['single'] and 'return_date' not in answers:
+	if answers['single'] == False and 'return_date' not in answers:
 		answers['return_date'] = answers['return_time'] = None
+		user_answers['return_date'] = user_answers['return_time'] = None
 		questions['return_date'] = "What is the date that you would like to return?"
 		questions['return_time'] = "What is the time that you would like to return?"
 
@@ -208,6 +230,7 @@ def get_current_question():
 			return questions[current_question_type]
 
 def get_ticket_information():
+	print('constructing url')
 	ticket_url_request = construct_ticket_url()
 	print(ticket_url_request)
 
@@ -252,6 +275,12 @@ def handle_user_confirmation(user_input):
 		return "Would you like this ticket?"
 
 def reset_answers():
+	answers.pop("return_date", None)
+	answers.pop("return_time", None)
+	questions.pop("return_time", None)
+	questions.pop("return_date", None)
+	user_answers.pop("return_time", None)
+	user_answers.pop("return_date", None)
 	for answer_type in answers:
 		answers[answer_type] = None
 

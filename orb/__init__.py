@@ -39,7 +39,7 @@ def create_app(test_config=None):
     @app.route('/process', methods=['GET'])
     def process():
 
-        sleep(2)
+        sleep(1)
         
         user_input = normalize_input(request.args.get('user_input'))
 

@@ -88,7 +88,7 @@ class ParseText:
         punctuations = '''!()-[]{};'"\,<>.?@#$%^&*_~'''
         stemmer = PorterStemmer()
 
-        print ("processing user input")
+        # print ("processing user input")
         # reduce uppercase text to lower case
         userText = userText.lower()
 
@@ -101,7 +101,7 @@ class ParseText:
         # print(noPunct)
         # split the sentence into tokens
         conversation = nltk.word_tokenize(noPunct)
-        print("Printing the token list: " + str(conversation))
+        # print("Printing the token list: " + str(conversation))
 
         # remove stopwords
         for word in conversation:
@@ -120,7 +120,7 @@ class ParseText:
             for j in range(len(conversation)):
                 conversation[j]= stemmer.stem(spell(conversation[j]))
 
-            print("Printing the token list: " + str(conversation))
+            # print("Printing the token list: " + str(conversation))
         return conversation
 
 
@@ -130,16 +130,16 @@ class ParseText:
 
 
 
-def main():
-    conversation = input("Hello, how can I help you?")
-    thisConversation=text.userInput(conversation)
-    print("Printing the token list:" + str(thisConversation))
+# def main():
+#     conversation = input("Hello, how can I help you?")
+#     thisConversation=text.userInput(conversation)
+#     # print("Printing the token list:" + str(thisConversation))
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    text = ParseText()
-    main()
-    #text.testing()
-    #text.setLanguage()
+#     text = ParseText()
+#     main()
+#     #text.testing()
+#     #text.setLanguage()
     
     

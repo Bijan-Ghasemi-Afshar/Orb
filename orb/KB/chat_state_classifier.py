@@ -1,4 +1,4 @@
-from orb.RE import general_engine, ticket_engine
+from orb.RE import general_engine, ticket_engine, delay_engine
 from orb.KB import parse_input as parse_user_input
 from orb.KB import bot_classifier as chat_classifier
 import datetime, pymongo
@@ -25,8 +25,8 @@ def classify_chat(user_input):
 		return general_engine
 	elif conversation_state[0] == 'Booking':
 		return ticket_engine
-	else:
-		return general_engine
+	else: # conversation_state[0] == 'Model'
+		return delay_engine
 
 
 

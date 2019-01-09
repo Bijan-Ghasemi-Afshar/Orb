@@ -1,6 +1,6 @@
 import pymongo, datetime, time, requests, re, json
 from bs4 import BeautifulSoup
-from orb.KB import nltk_bag_of_words as ticket_kb
+from orb.KB import ticket_kb as ticket_kb
 
 # Setup connection to the database
 client = pymongo.MongoClient("mongodb://localhost:27017/")

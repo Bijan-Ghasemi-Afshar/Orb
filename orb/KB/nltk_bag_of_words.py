@@ -118,7 +118,6 @@ class Bag_of_words():
                     bag_index = i
                     ##print("found: " + str(hold_vocab[bag_index]))
                     token = nltk.word_tokenize(hold_vocab[bag_index])   ##tokenize the found word in hold_vocab that matches 
-                    print('token: ', token)
                     if token[0] == 'to':        ##finds the destination
                         for i in range(1, len(token)):
                             #if is_empty(hold_facts['destination']): ##has to check if the destination is already stored
@@ -168,9 +167,6 @@ class Bag_of_words():
                     except ValueError:
                         print('date is not in correct format')
 
-        ## There are no found values in user_input 
-        if all(x == [] for x in hold_facts.values()):
-            print("I'm sorry, I didn't grasp anything you said in terms of ordering a train ticket")
                                 
         hold_facts['destination'] = Remove(hold_facts['destination']) ##will remove duplicates 
         hold_facts['destination'] = " ".join(hold_facts['destination'])

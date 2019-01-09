@@ -127,19 +127,3 @@ class ParseText:
 
     def testingLogic(self):
         print("Logic testing")
-
-
-
-# def main():
-#     conversation = input("Hello, how can I help you?")
-#     thisConversation=text.userInput(conversation)
-#     # print("Printing the token list:" + str(thisConversation))
-
-# if __name__ == "__main__":
-
-#     text = ParseText()
-#     main()
-#     #text.testing()
-#     #text.setLanguage()
-    
-    

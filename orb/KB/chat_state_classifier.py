@@ -15,9 +15,11 @@ def classify_chat(user_input):
 	store_user_conversation(conversation)
 	user_conversation = " ".join(str(word) for word in conversation)
 
+	print("User input: ", conversation)
+	
 	# Classify conversation
 	state_classifier = chat_classifier.BotClassifier()
-	print(user_conversation)
+	print("User input concatenated: ", user_conversation)
 	conversation_state = state_classifier.classify(user_conversation)
 	print('This is the chat state ==> ', conversation_state)
 
@@ -27,8 +29,7 @@ def classify_chat(user_input):
 		return ticket_engine
 	else: # conversation_state[0] == 'Model'
 		return delay_engine
-
-
+	# return ticket_engine
 
 def store_user_conversation(conversation):
 	current_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")

@@ -3,6 +3,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.lancaster import LancasterStemmer
 from nltk.stem.porter import PorterStemmer
+from nltk.stem import WordNetLemmatizer
 import json
 
 class BotClassifier:
@@ -11,6 +12,7 @@ class BotClassifier:
     # word stemmer
     # stemmer = LancasterStemmer()
     stemmer = PorterStemmer()
+    lemmatizer = WordNetLemmatizer()
     # hold the words 
     bagOfWords = {}
     classifyText = {}
@@ -21,7 +23,7 @@ class BotClassifier:
         self.classifyText = {}
         self.stemmer = PorterStemmer()
         self.language = 'english'
-
+        self.lemmatizer = WordNetLemmatizer()
     # 3 classes of training data
     def train(self):
         
@@ -39,7 +41,7 @@ class BotClassifier:
         trainingData.append({"class":"General", "sentence":"where am I?"})
         trainingData.append({"class":"General", "sentence":"What are you?"})
         trainingData.append({"class":"General", "sentence":"IS this a chat bot?"})
-        trainingData.append({"class":"General", "sentence":"Can i book a train from here?"})
+        # trainingData.append({"class":"General", "sentence":"Can i book a train from here?"})
         trainingData.append({"class":"General", "sentence":"Can you help me?"})
         trainingData.append({"class":"General", "sentence":"Isn’t it lovely weather today"})
         trainingData.append({"class":"General", "sentence":"Blah blah ticket blah train"})
@@ -62,11 +64,11 @@ class BotClassifier:
         trainingData.append({"class":"General", "sentence":"Do you know any popular sayings?"})
         trainingData.append({"class":"General", "sentence":"Who is the best US president of all time?"})
         trainingData.append({"class":"General", "sentence":"Is Lebron better than Jordan?"})
-        trainingData.append({"class":"General", "sentence":"Can I book a train ticket from here?"})
-        trainingData.append({"class":"General", "sentence":"Norwich, Essex, Liverpool London"})
-        trainingData.append({"class":"General", "sentence":"Delay, time, 12:00 pm"})
-        trainingData.append({"class":"General", "sentence":"fasdfsf time Book Train to Norwich "})
-        trainingData.append({"class":"General", "sentence":"I want to book a train from Colchester?"})
+        # trainingData.append({"class":"General", "sentence":"Can I book a train ticket from here?"})
+        # trainingData.append({"class":"General", "sentence":"Norwich, Essex, Liverpool London"})
+        # trainingData.append({"class":"General", "sentence":"Delay, time, 12:00 pm"})
+        # trainingData.append({"class":"General", "sentence":"fasdfsf time Book Train to Norwich "})
+        # trainingData.append({"class":"General", "sentence":"I want to book a train from Colchester?"})
         trainingData.append({"class":"General", "sentence":"How have you been doing?"})
         trainingData.append({"class":"General", "sentence":"Who invented you?"})
         trainingData.append({"class":"General", "sentence":"Are you intelligent?"})
@@ -74,9 +76,14 @@ class BotClassifier:
         trainingData.append({"class":"General", "sentence":"Did Thanos do nothing wrong?"})
         trainingData.append({"class":"General", "sentence":"Best sport to play"})
         trainingData.append({"class":"General", "sentence":"What are the geopolitical politics at play?"})
+        trainingData.append({"class":"General", "sentence":"i want a plane"})
+        trainingData.append({"class":"General", "sentence":"i want fly a plane"})
+        trainingData.append({"class":"General", "sentence":"i want a bus"})
+        trainingData.append({"class":"General", "sentence":"i want ride a bus"})
+        trainingData.append({"class":"General", "sentence":"i want drive a bus"})
 
 
-        trainingData.append({"class":"Booking", "sentence":"i want to book a train to london"})
+        trainingData.append({"class":"Booking", "sentence":"i want to book a train"})
         trainingData.append({"class":"Booking", "sentence":"i want three tickets"})
         trainingData.append({"class":"Booking", "sentence":"from norwich"})
         trainingData.append({"class":"Booking", "sentence":"i want to book a train to london from Colchester"})
@@ -165,11 +172,13 @@ class BotClassifier:
         for data in trainingData:
             for word in nltk.word_tokenize(data['sentence']):
                 # remove stopwords and punctuation
-                if word not in ["?", "'s","!",",","a", "i", "it", "am", "at", "on", "in", "to", "too", "very", 
+                if word not in ["want", "are", "?", "'s","!",",","a", "i", "it", "am", "at", "on", "in", "to", "too", "very", 
                     "of", "from", "here", "even", "the", "but", "and", "is", "my", 
                     "them", "then", "this", "that", "than", "though", "so", "are"]:
                     # stem and lowercase each word
-                    word = self.stemmer.stem(word.lower())
+                    
+                    # word = self.lemmatizer.lemmatize(word.lower())
+                    word =self.lemmatizer.lemmatize(word.lower())
                     #print(word)
                     
                     if word not in self.bagOfWords:
@@ -187,12 +196,13 @@ class BotClassifier:
         # tokenize each word in our new sentence
         for word in nltk.word_tokenize(sentence):
             # check to see if the stem of the word is in any of our classes
-            if self.stemmer.stem(word.lower()) in self.classifyText[class_name]:
+            # if self.lemmatizer.lemmatize(word.lower()) in self.classifyText[class_name]:
+            if self.lemmatizer.lemmatize(word.lower()) in self.classifyText[class_name]:
                 # treat each word with same weight
                 score += 1
                 
                 if show_details:
-                    print ("   match: %s" % self.stemmer.stem(word.lower() ))
+                    print ("   match: %s" % self.lemmatizer.lemmatize(word.lower() ))
         return score
 
 
@@ -201,16 +211,18 @@ class BotClassifier:
     '''
     def calculateCommonValues(self, sentence, class_name, show_details=True):
         score = 0
-        stemmer = PorterStemmer()
+        # stemmer = PorterStemmer()
+        lemmatizer = WordNetLemmatizer()
         # tokenize each word in our new sentence
         for word in nltk.word_tokenize(sentence):
             # check to see if the stem of the word is in any of our classes
-            if stemmer.stem(word.lower()) in self.classifyText[class_name]:
+            # if lemmatizer.lemmatize(word.lower()) in self.classifyText[class_name]:
+            if lemmatizer.lemmatize(word.lower()) in self.classifyText[class_name]:
                 # treat each word with relative weight
-                score += (1 / self.bagOfWords[stemmer.stem(word.lower())])
+                score += (1 / self.bagOfWords[lemmatizer.lemmatize(word.lower())])
 
                 if show_details:
-                    print ("   match: %s (%s)" % (stemmer.stem(word.lower()), 1 / self.bagOfWords[stemmer.stem(word.lower())]))
+                    print ("   match: %s (%s)" % (lemmatizer.lemmatize(word.lower()), 1 / self.bagOfWords[lemmatizer.lemmatize(word.lower())]))
         return score
 
     '''

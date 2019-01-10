@@ -2,7 +2,7 @@ import os, re
 from flask import (Flask, render_template, request)
 from flask_pymongo import PyMongo
 from time import sleep
-from orb.KB import convo as orb_bot
+from orb.KB import general_kb as orb_bot
 from orb.KB import chat_state_classifier
 
 
@@ -41,7 +41,7 @@ def create_app(test_config=None):
 
         sleep(1)
         
-        user_input = normalize_input(request.args.get('user_input'))
+        user_input = request.args.get('user_input')
 
         chat_state = chat_state_classifier.classify_chat(user_input)
 
@@ -50,9 +50,9 @@ def create_app(test_config=None):
         return orb_response
 
 
-    def normalize_input(user_input):
-        user_input = user_input.lower()
-        return re.sub('[^A-Za-z0-9/:]+', ' ', user_input)
+    # def normalize_input(user_input):
+    #     user_input = user_input.lower()
+    #     return re.sub('[^A-Za-z0-9/:]+', ' ', user_input)
         
 
 

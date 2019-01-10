@@ -7,6 +7,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer
 from autocorrect import spell
+from nltk.stem import WordNetLemmatizer
 
 '''
 Text preprocesing class to parse user text. All text is processed in the following order: reduced to lower case, punctation removed,
@@ -18,20 +19,28 @@ class ParseText:
     # set the language of our input text add functionality to control later
     language = 'english'
     spelling = True
-
+    lemmatizer = WordNetLemmatizer()
+    stemmer = PorterStemmer()
     def __init__(self):
         self.inputText = []
-
+        self.language = 'english'
+        self.spelling = True
+        self.stem_flag = False
+        self.lammetize_flag = True
+        self.lemmatizer = WordNetLemmatizer()
+        self.stemmer = PorterStemmer()
     '''
     Function for testing text
     '''
-    def testing(self):
+    def testing(self, lemmatizer, stemmer):
 
-        print("Testing packages support")
+        # print("Testing packages support")
         # Print out the supported stopwords languages
-        print(stopwords.fileids())
+        # print(stopwords.fileids())
         # Print out english stopwords 
-        print (stopwords.words('english'))
+        # print (stopwords.words('english'))
+        print('Lemmatize: ', lemmatizer.lemmatize("bus"))
+        print('stemmed', stemmer.stem("bus"))
 
     '''
     Set the system text input langauge 
@@ -85,8 +94,13 @@ class ParseText:
     '''
     def userInput(self, userText):
 
-        punctuations = '''!()-[]{};'"\,<>.?@#$%^&*_~'''
+        # punctuations = '''!()-[]{};'"\,<>.?@#$%^&*_~'''
+        punctuations = '!'
         stemmer = PorterStemmer()
+        lemmatizer = WordNetLemmatizer()
+
+        self.testing(lemmatizer, stemmer)
+
 
         # print ("processing user input")
         # reduce uppercase text to lower case
@@ -101,26 +115,36 @@ class ParseText:
         # print(noPunct)
         # split the sentence into tokens
         conversation = nltk.word_tokenize(noPunct)
-        # print("Printing the token list: " + str(conversation))
+        print("Printing the token list: " + str(conversation))
 
         # remove stopwords
         for word in conversation:
             if word in stopwords.words(ParseText.language):
                 conversation.remove(word)
-        # print("Printing the token list: " + str(conversation)) 
+        print("Printing the token list 2: " + str(conversation)) 
 
         # stem the words 
-        for i in range(len(conversation)):
-            conversation[i]= stemmer.stem(conversation[i])
-        # print("Printing the token list: " + str(conversation))
+        stem_flag = True
+        if stem_flag:
+            for i in range(len(conversation)):
+                conversation[i]= stemmer.stem(conversation[i])
+            print("Printing the token list 3: " + str(conversation))
+
+        # lemmentise words
+        lammetize_flag = True
+        if lammetize_flag:
+            for i in range(len(conversation)):
+                conversation[i]=lemmatizer.lemmatize(conversation[i])
+            print("Printing from token list 4:"+ str(conversation))
 
         # spell check the text
         if ParseText.spelling == True:
             #print("spell test")
             for j in range(len(conversation)):
-                conversation[j]= stemmer.stem(spell(conversation[j]))
+                 conversation[j]= stemmer.stem(spell(conversation[j]))
+                # conversation[j] = lemmatizer.lemmatize(spell(conversation[j]))
 
-            # print("Printing the token list: " + str(conversation))
+            print("Printing the token list 5: " + str(conversation))
         return conversation
 
 

@@ -132,6 +132,11 @@ class BotClassifier:
         trainingData.append({"class":"Booking", "sentence":"Kilburn High Road to Norwich and 25 tickets at 3:00 pm "})
         trainingData.append({"class":"Booking", "sentence":"Kilburn High Road to Norwich and 2 tickets at 5:00 pm "})
         trainingData.append({"class":"Booking", "sentence":"i want to book a trin from Kings Langley"})
+        trainingData.append({"class":"Booking", "sentence":"  /  /"})
+        trainingData.append({"class":"Booking", "sentence":"before 9 am"})
+        trainingData.append({"class":"Booking", "sentence":"at the date 01/11/2019"})
+        trainingData.append({"class":"Booking", "sentence":"at 7 pm"})
+        trainingData.append({"class":"Booking", "sentence":"the date 1/3/2020"})
 
 
         trainingData.append({"class":"Model", "sentence":"how often is the train late"})
@@ -139,15 +144,8 @@ class BotClassifier:
         trainingData.append({"class":"Model", "sentence":"is the train late?"})
         trainingData.append({"class":"Model", "sentence":"with the delay, what time will we arrive at the destiniation?"})
         trainingData.append({"class":"Model", "sentence":"how often is the train late"})
-        trainingData.append({"class":"Model", "sentence":"how often is the train late from Norwich to Colchester"})
-        trainingData.append({"class":"Model", "sentence":"how often is the train late from Norwich to Colchester at 12:00 pm "})
-        trainingData.append({"class":"Model", "sentence":"how often is the train late from Norwich to Kilburn High Road"})
-        trainingData.append({"class":"Model", "sentence":"how often is the train late from Norwich to Johnston (Pembs)"})
-        trainingData.append({"class":"Model", "sentence":"how often is the train late from Hertford East to Hertford North"})
-        trainingData.append({"class":"Model", "sentence":"how often is the train late at 1:00 pm from Norwich"})
-        trainingData.append({"class":"Model", "sentence":"how often is the train late at 3:00 pm from Colchester"})
-        trainingData.append({"class":"Model", "sentence":"how often is the train late at Colchester"})
-        trainingData.append({"class":"Model", "sentence":"how often is the train late at Hinchley Wood"})
+        trainingData.append({"class":"Model", "sentence":"how often is the train late this week"})
+        trainingData.append({"class":"Model", "sentence":"how often is the delay happening"})
 
         # addidition classifer to detect a reported fault
         trainingData.append({"class":"Fault", "sentence":"fault"})
@@ -156,7 +154,7 @@ class BotClassifier:
         trainingData.append({"class":"Fault", "sentence":"open fault"})
         trainingData.append({"class":"Fault", "sentence":"report issue"})
         trainingData.append({"class":"Fault", "sentence":"damaged"})
-        print ("%s sentences of training data" % len(trainingData))
+        # print ("%s sentences of training data" % len(trainingData))
         # print(trainingData)
         # Create unique list
         classes = list(set([a['class'] for a in trainingData]))
@@ -245,7 +243,7 @@ class BotClassifier:
     returns the sentance class and confidence
     '''
     def classify(self,sentence):
-        print("classifying")
+        # print("classifying")
         self.train()
 
         # store the default classifier state
@@ -269,7 +267,7 @@ class BotClassifier:
     returns the sentance Class
     '''
     def classifySentence(self,sentence):
-        print("classifying")
+        # print("classifying")
         self.train()
 
         # store the default classifier state

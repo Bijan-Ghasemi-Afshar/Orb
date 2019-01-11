@@ -32,6 +32,7 @@ user_answers = {
 
 def response(user_input):
 
+	print("tickt engine input: ", user_input)
 	bag = ticket_kb.Bag_of_words(user_input)
 	hold_facts = bag.read_vocab()
 

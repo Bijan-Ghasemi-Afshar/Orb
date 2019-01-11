@@ -2,6 +2,8 @@
 import nltk
 import csv
 import collections
+import re
+import datetime
 # import stopwords, tokens, stemmer, spelling
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -38,9 +40,10 @@ class ParseText:
         # Print out the supported stopwords languages
         # print(stopwords.fileids())
         # Print out english stopwords 
-        # print (stopwords.words('english'))
-        print('Lemmatize: ', lemmatizer.lemmatize("bus"))
-        print('stemmed', stemmer.stem("bus"))
+        # print ("yo: ", stopwords.words('english'))
+        print ("yo: ")
+        # print('Lemmatize: ', lemmatizer.lemmatize("bus"))
+        # print('stemmed', stemmer.stem("bus"))
 
     '''
     Set the system text input langauge 
@@ -90,6 +93,25 @@ class ParseText:
                 print("Please enter yes or no.")
    
     '''
+    Validate the date and append a date flag
+    '''
+    def dateChecker(self, userText):
+        if '/' in userText:
+            modified_text_with_date = []
+            userText_arr = re.sub("[^\w/]", " ",  userText).split()
+            for user_word in userText_arr:
+                if '/' in user_word:
+                    try:
+                        date_format = "%d/%m/%Y"
+                        datetime.datetime.strptime(user_word, date_format)
+                        user_word = 'date ' + user_word
+                    except ValueError:
+                        print('date is not in correct format')
+                modified_text_with_date.append(user_word)
+            user_input = " ".join(modified_text_with_date)
+        return userText
+
+    '''
     Parse all the input conversation text
     '''
     def userInput(self, userText):
@@ -105,7 +127,7 @@ class ParseText:
         # print ("processing user input")
         # reduce uppercase text to lower case
         userText = userText.lower()
-
+        userText = self.dateChecker(userText)
         # remove all punctuation
         noPunct = ""
         for char in userText:
@@ -115,36 +137,40 @@ class ParseText:
         # print(noPunct)
         # split the sentence into tokens
         conversation = nltk.word_tokenize(noPunct)
-        print("Printing the token list: " + str(conversation))
+        # print("Printing the token list: " + str(conversation))
 
         # remove stopwords
+        stop_words = stopwords.words(ParseText.language)
+        stop_words.remove('to')
+        stop_words.remove('from')
+        stop_words.remove('no')
         for word in conversation:
-            if word in stopwords.words(ParseText.language):
+            if word in stop_words:
                 conversation.remove(word)
-        print("Printing the token list 2: " + str(conversation)) 
+        # print("Printing the token list 2: " + str(conversation)) 
 
         # stem the words 
-        stem_flag = True
-        if stem_flag:
-            for i in range(len(conversation)):
-                conversation[i]= stemmer.stem(conversation[i])
-            print("Printing the token list 3: " + str(conversation))
+        # stem_flag = True
+        # if stem_flag:
+        #     for i in range(len(conversation)):
+        #         conversation[i]= stemmer.stem(conversation[i])
+        #     print("Printing the token list 3: " + str(conversation))
 
         # lemmentise words
         lammetize_flag = True
         if lammetize_flag:
             for i in range(len(conversation)):
                 conversation[i]=lemmatizer.lemmatize(conversation[i])
-            print("Printing from token list 4:"+ str(conversation))
+            # print("Printing from token list 4:"+ str(conversation))
 
         # spell check the text
         if ParseText.spelling == True:
             #print("spell test")
             for j in range(len(conversation)):
-                 conversation[j]= stemmer.stem(spell(conversation[j]))
-                # conversation[j] = lemmatizer.lemmatize(spell(conversation[j]))
+                #  conversation[j]= stemmer.stem(spell(conversation[j]))
+                 conversation[j] = lemmatizer.lemmatize(spell(conversation[j]))
 
-            print("Printing the token list 5: " + str(conversation))
+            # print("Printing the token list 5: " + str(conversation))
         return conversation
 
 

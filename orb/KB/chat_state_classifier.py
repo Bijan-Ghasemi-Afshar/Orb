@@ -10,26 +10,21 @@ orb_database = client["orbDatabase"]
 # Classifies the chat state based on user input and returns the right engine
 def classify_chat(user_input):
 
-	text = parse_user_input.ParseText()
-	conversation = text.userInput(user_input)
-	store_user_conversation(conversation)
-	user_conversation = " ".join(str(word) for word in conversation)
-
-	print("User input: ", conversation)
+	store_user_conversation(user_input)
 	
 	# Classify conversation
 	state_classifier = chat_classifier.BotClassifier()
-	print("User input concatenated: ", user_conversation)
-	conversation_state = state_classifier.classify(user_conversation)
-	print('This is the chat state ==> ', conversation_state)
+	# print("User input concatenated: ", user_conversation)
+	conversation_state = state_classifier.classify(user_input)
+	# print('This is the chat state ==> ', conversation_state)
 
-	if conversation_state[0] == 'General':
-		return general_engine
-	elif conversation_state[0] == 'Booking':
-		return ticket_engine
-	else: # conversation_state[0] == 'Model'
-		return delay_engine
-	# return ticket_engine
+	# if conversation_state[0] == 'General':
+	# 	return general_engine
+	# elif conversation_state[0] == 'Booking':
+	# 	return ticket_engine
+	# else: # conversation_state[0] == 'Model'
+	# 	return delay_engine
+	return ticket_engine
 
 def store_user_conversation(conversation):
 	current_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")

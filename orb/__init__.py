@@ -4,6 +4,7 @@ from flask_pymongo import PyMongo
 from time import sleep
 from orb.KB import general_kb as orb_bot
 from orb.KB import chat_state_classifier
+from orb.KB import parse_input as parse_user_input
 
 
 def create_app(test_config=None):
@@ -43,17 +44,19 @@ def create_app(test_config=None):
         
         user_input = request.args.get('user_input')
 
+        parse_text_object = parse_user_input.ParseText()
+
+        user_input = parse_text_object.userInput(user_input)
+
+        user_input = " ".join(user_input).lower()
+
+        # print("user input parse: ", user_input)
+
         chat_state = chat_state_classifier.classify_chat(user_input)
 
         orb_response = chat_state.response(user_input)
 
         return orb_response
-
-
-    # def normalize_input(user_input):
-    #     user_input = user_input.lower()
-    #     return re.sub('[^A-Za-z0-9/:]+', ' ', user_input)
-        
 
 
     return app

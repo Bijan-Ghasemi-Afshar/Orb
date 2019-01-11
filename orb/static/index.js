@@ -60,7 +60,6 @@ function saveUserChat(input){
 
 // Put bot response into the chat area
 function saveBotChat(input){
-	console.log('input' + input)
 	input = input.replace(/\n/g, "<br />");
 	$(".chat-area").append(`<div class="chat-text-container"><div class="bot-chat bg-warning">${input}</div></div><br/>`)
 

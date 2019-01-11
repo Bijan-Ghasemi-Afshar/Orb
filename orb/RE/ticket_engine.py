@@ -34,10 +34,28 @@ additional_information = ""
 
 def response(user_input):
 
-	print("user Input: ", user_input)
-
 	global additional_information
 	additional_information = ""
+
+	# Call to ticket_kb for ticket information extraction
+	get_user_answer(user_input)
+
+	if all_questions_answered():
+		return handle_user_confirmation(user_input)
+	else:
+		for current_question_type in questions:
+			if answers[current_question_type] is None and user_answers[current_question_type] is not None:
+				if input_is_valid(current_question_type, user_answers):					
+					answers[current_question_type] = user_answers[current_question_type]
+
+		user_answer_confirmation()
+		# Check again to see if all questions are answered
+		if all_questions_answered():
+			return get_ticket_information()
+		else:
+			return get_current_question()
+
+def get_user_answer(user_input):
 	bag = ticket_kb.Bag_of_words(user_input)
 	hold_facts = bag.read_vocab()
 
@@ -65,24 +83,6 @@ def response(user_input):
 			
 		else:
 			user_answers[answer_type] = hold_facts[answer_type]	
-
-	print('user answer ', user_answers)
-
-	if all_questions_answered():
-		return handle_user_confirmation(user_input)
-	else:
-		for current_question_type in questions:
-			if answers[current_question_type] is None and user_answers[current_question_type] is not None:
-				if input_is_valid(current_question_type, user_answers):					
-					answers[current_question_type] = user_answers[current_question_type]
-
-		user_answer_confirmation()
-		# Check again to see if all questions are answered
-		if all_questions_answered():
-			return get_ticket_information()
-		else:
-			return get_current_question()
-
 
 def all_questions_answered():
 
@@ -117,9 +117,8 @@ def input_is_valid(current_question_type, user_answers):	# TODO: Add validation 
 		return validate_return(user_answers[current_question_type])
 
 def validate_origin(user_input):
-	station_abr = get_station_abr(user_input)
-	if station_abr == None:
-		# print("No station was found!")
+	station_name = get_station_abr(user_input)
+	if station_name == None:
 		global additional_information
 		additional_information += "No station was found!\n"
 		return False
@@ -127,14 +126,13 @@ def validate_origin(user_input):
 		return True	
 
 def validate_destination(user_input):
-	station_abr = get_station_abr(user_input)
-	if station_abr == None:
-		# print("No station was found!")
+	station_name = get_station_abr(user_input)
+	if station_name == None:
 		global additional_information
 		additional_information += "No station was found!\n"
 		return False
 	else:
-		if station_abr != answers['origin']:
+		if station_name != answers['origin']:
 			return True
 		else:
 			# print("Destination cannot be the same as origin")
@@ -153,7 +151,6 @@ def validate_date(user_input):
 		elif date_object.date() == datetime.datetime.today().date() and answers['time'] != None:
 			time_object = datetime.datetime.strptime(answers['time'], time_format).time()
 			if time_object < datetime.datetime.now().time():
-				# print("Time provided cannot be in the past")
 				additional_information += "Time provided cannot be in the past\n"
 				return False
 			else:
@@ -161,7 +158,6 @@ def validate_date(user_input):
 		else:
 			return True
 	except ValueError:
-		# print("Date provided is not in the correct format")
 		additional_information += "Date provided is not in the correct format\n"
 	return False
 
@@ -174,7 +170,6 @@ def validate_time(user_input):
 		if answers['date'] != None:
 			date_object = datetime.datetime.strptime(answers['date'], date_format)
 			if date_object.date() == datetime.datetime.today().date() and time_object < datetime.datetime.now().time():
-				# print("Time provided cannot be in the past")
 				global additional_information
 				additional_information += "Time provided cannot be in the past\n"
 				return False
@@ -252,7 +247,6 @@ def get_station_abr(station_name):
 		return None
 
 def get_current_question():
-	print('additional: ', additional_information)
 	for current_question_type in questions:
 		if answers[current_question_type] == None:
 			return additional_information + questions[current_question_type]

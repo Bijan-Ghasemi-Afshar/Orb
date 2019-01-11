@@ -460,26 +460,11 @@ pairs = (
 ORB_chatbot = Chat(pairs, reflections)
 
 
-def ORB_chat():
-    print("ORB\n---------")
-    print("Talk to ORB by typing in plain English, using normal upper-")
-    print('and lower-case letters and punctuation.  Enter "quit" when done.')
-    print('=' * 72)
-    print("Hello. I am ORB and how may I assist you? Perhaps you would like to book a train?")
-
-    # ORB_chatbot.converse()
-
 def initiate():
     chat_instruction = "Talk to ORB by typing in plain English, using normal upper-\nand lower-case letters and punctuation.  Enter \"quit\" when done."
-    init_chat = "Hello. I am ORB and how may I assist you? Perhaps you would like to book a train?"
+    init_chat = "Hello. I am ORB and how may I assist you?"
     return init_chat
 
 def chat_respond(user_input):
     response = ORB_chatbot.respond(user_input)
     return response
-
-def demo():
-    ORB_chat()
-
-# if __name__ == "__main__":
-#     demo()

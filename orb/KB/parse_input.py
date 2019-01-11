@@ -144,6 +144,8 @@ class ParseText:
         stop_words.remove('to')
         stop_words.remove('from')
         stop_words.remove('no')
+        stop_words.remove('in')
+        stop_words.remove('at')
         for word in conversation:
             if word in stop_words:
                 conversation.remove(word)

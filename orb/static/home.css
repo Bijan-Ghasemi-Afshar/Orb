@@ -35,3 +35,9 @@ body {
     width: 300px;
     text-align: center;
 }
+
+#orb_face{
+    width: 10%;
+    margin: 0 auto;
+    display: block;
+}

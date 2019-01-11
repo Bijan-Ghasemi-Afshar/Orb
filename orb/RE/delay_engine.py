@@ -7,10 +7,10 @@ orb_database = client["orbDatabase"]
 
 
 answers = {
-	'origin' 		: "norwich",
-	'destination' 	: "london liverpool street",
-	'time' 			: "12:00",
-	'location'		: "diss",
+	'origin' 		: None,
+	'destination' 	: None,
+	'time' 			: None,
+	'location'		: None,
 	'delay'			: None
 }
 
@@ -40,7 +40,9 @@ def response(user_input):
 
     delay_kb_object = delay_kb.DelayModel(user_input)
 
-    user_answers['delay'] = user_input
+    user_answers = delay_kb_object.get_delay_information()
+
+    # user_answers['delay'] = user_input
 
     if all_questions_answered():
         return predict_delay()
@@ -90,7 +92,7 @@ def validate_origin(user_input):
 	station_abr = get_station_abr(user_input)
 	if station_abr == None:
 		global additional_information
-		additional_information += "No station was found!\n"
+		additional_information += "Please enter a station name!\n"
 		return False
 	else:
 		return True
@@ -99,7 +101,7 @@ def validate_destination(user_input):
     station_abr = get_station_abr(user_input)
     if station_abr == None:
 	    global additional_information
-	    additional_information += "No station was found!\n"
+	    additional_information += "Please enter a station name!\n"
 	    return False
     else:
 	    if station_abr != answers['origin']:
@@ -123,7 +125,7 @@ def validate_location(user_input):
     station_name = get_station_abr(user_input)
     if station_name == None:
         global additional_information
-        additional_information += "No station was found!\n"
+        additional_information += "Please enter a station name!\n"
         return False
     else:
         if station_name == answers['destination']:
@@ -159,6 +161,12 @@ def user_answer_confirmation():
 	for answer_type in answers:
 		if answers[answer_type] is not None:
 			additional_information += answer_type + ": " + str(answers[answer_type]) + "\n"
+
+def get_current_context():
+    for key in answers:
+        if answers[key] is None:
+            return key
+    return None
 
 def predict_delay():
 	pass

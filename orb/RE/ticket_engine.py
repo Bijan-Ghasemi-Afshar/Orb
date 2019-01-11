@@ -30,9 +30,14 @@ user_answers = {
 	'single' 		: None
 }
 
+additional_information = ""
+
 def response(user_input):
 
-	print("tickt engine input: ", user_input)
+	print("user Input: ", user_input)
+
+	global additional_information
+	additional_information = ""
 	bag = ticket_kb.Bag_of_words(user_input)
 	hold_facts = bag.read_vocab()
 
@@ -61,6 +66,8 @@ def response(user_input):
 		else:
 			user_answers[answer_type] = hold_facts[answer_type]	
 
+	print('user answer ', user_answers)
+
 	if all_questions_answered():
 		return handle_user_confirmation(user_input)
 	else:
@@ -69,6 +76,7 @@ def response(user_input):
 				if input_is_valid(current_question_type, user_answers):					
 					answers[current_question_type] = user_answers[current_question_type]
 
+		user_answer_confirmation()
 		# Check again to see if all questions are answered
 		if all_questions_answered():
 			return get_ticket_information()
@@ -111,7 +119,9 @@ def input_is_valid(current_question_type, user_answers):	# TODO: Add validation 
 def validate_origin(user_input):
 	station_abr = get_station_abr(user_input)
 	if station_abr == None:
-		print("No station was found!")
+		# print("No station was found!")
+		global additional_information
+		additional_information += "No station was found!\n"
 		return False
 	else:
 		return True	
@@ -119,13 +129,16 @@ def validate_origin(user_input):
 def validate_destination(user_input):
 	station_abr = get_station_abr(user_input)
 	if station_abr == None:
-		print("No station was found!")
+		# print("No station was found!")
+		global additional_information
+		additional_information += "No station was found!\n"
 		return False
 	else:
 		if station_abr != answers['origin']:
 			return True
 		else:
-			print("Destination cannot be the same as origin")
+			# print("Destination cannot be the same as origin")
+			additional_information += "Destination cannot be the same as origin\n"
 			return False
 
 def validate_date(user_input):
@@ -134,19 +147,22 @@ def validate_date(user_input):
 	try:
 		date_object = datetime.datetime.strptime(user_input, date_format)
 		if date_object.date() < datetime.datetime.today().date():
-			print("Date provided cannot be in the past")
+			global additional_information
+			additional_information += "Date provided cannot be in the past\n"
 			return False
 		elif date_object.date() == datetime.datetime.today().date() and answers['time'] != None:
 			time_object = datetime.datetime.strptime(answers['time'], time_format).time()
 			if time_object < datetime.datetime.now().time():
-				print("Time provided cannot be in the past")
+				# print("Time provided cannot be in the past")
+				additional_information += "Time provided cannot be in the past\n"
 				return False
 			else:
 				return True
 		else:
 			return True
 	except ValueError:
-		print("Date provided is not in the correct format")
+		# print("Date provided is not in the correct format")
+		additional_information += "Date provided is not in the correct format\n"
 	return False
 
 def validate_time(user_input):
@@ -158,12 +174,15 @@ def validate_time(user_input):
 		if answers['date'] != None:
 			date_object = datetime.datetime.strptime(answers['date'], date_format)
 			if date_object.date() == datetime.datetime.today().date() and time_object < datetime.datetime.now().time():
-				print("Time provided cannot be in the past")
+				# print("Time provided cannot be in the past")
+				global additional_information
+				additional_information += "Time provided cannot be in the past\n"
 				return False
 
 		return True
 	except ValueError:
-		print("There was an issue with the time format")
+		# print("There was an issue with the time format")
+		additional_information += "There was an issue with the time format\n"
 		return False
 
 def validate_return(user_input):
@@ -183,20 +202,24 @@ def validate_return_date(user_input):
 		departure_date_object = datetime.datetime.strptime(answers['date'], date_format)
 		return_date_object = datetime.datetime.strptime(user_input, date_format)
 		if return_date_object.date() < departure_date_object.date():
-			print("Return date cannot be before the departure")
+			# print("Return date cannot be before the departure")
+			global additional_information
+			additional_information = "Return date cannot be before the departure"
 			return False
 		elif return_date_object.date() == departure_date_object.date() and answers['return_time'] != None:
 			departure_time_object = datetime.datetime.strptime(answers['time'], time_format).time()
 			return_time_object = datetime.datetime.strptime(answers['return_time'], time_format).time()
 			if return_time_object <= departure_time_object:
-				print("Retrun time cannot be before the departure")
+				# print("Retrun time cannot be before the departure")
+				additional_information = "Retrun time cannot be before the departure"
 				return False
 			else:
 				return True
 		else:
 			return True
 	except ValueError:
-		print("Date provided is not in the correct format")
+		additional_information = "Date provided is not in the correct format"
+		# print("Date provided is not in the correct format")
 	return False
 
 def validate_return_time(user_input):
@@ -210,25 +233,29 @@ def validate_return_time(user_input):
 			departure_date_object = datetime.datetime.strptime(answers['date'], date_format)
 			return_date_object = datetime.datetime.strptime(answers['return_date'], date_format)
 			if return_date_object.date() == departure_date_object.date() and return_time_object <= departure_time_object:
-				print("Retrun time cannot be before the departure")
+				# print("Retrun time cannot be before the departure")
+				global additional_information
+				additional_information = "Retrun time cannot be before the departure"
 				return False
 
 		return True
 	except ValueError:
-		print("There was an issue with the time format")
+		additional_information = "There was an issue with the time format"
+		# print("There was an issue with the time format")
 		return False
 
 def get_station_abr(station_name):
 	result = orb_database.trainStations.find_one({"name": station_name})
 	if result != None:
-		return result["abbreviation"]
+		return result["name"]
 	else:
 		return None
 
 def get_current_question():
+	print('additional: ', additional_information)
 	for current_question_type in questions:
 		if answers[current_question_type] == None:
-			return questions[current_question_type]
+			return additional_information + questions[current_question_type]
 
 def get_ticket_information():
 	print('constructing url')
@@ -297,3 +324,10 @@ def construct_ticket_url():
 		return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep/{4}/{5}/dep".format(answers['origin'], answers['destination'], date_url_format, time_url_format, return_date_url_format, return_time_url_format)
 	else:
 		return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep".format(answers['origin'], answers['destination'], date_url_format, time_url_format)
+
+def user_answer_confirmation():
+	global additional_information
+	
+	for answer_type in answers:
+		if answers[answer_type] is not None:
+			additional_information += answer_type + ": " + str(answers[answer_type]) + "\n"

@@ -33,8 +33,8 @@ def create_app(test_config=None):
     # Home page & initiate the chat with instructions
     @app.route('/')
     def hello():
-        chat_instruction, orb_init = orb_bot.initiate()
-        return render_template('home.html', chat_instruction=chat_instruction, orb_init=orb_init)
+        orb_init = orb_bot.initiate()
+        return render_template('home.html', orb_init=orb_init)
 
     # User chats with orb; process it; respond to it;
     @app.route('/process', methods=['GET'])

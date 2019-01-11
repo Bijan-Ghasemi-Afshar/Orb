@@ -8,6 +8,11 @@ import sys
 ##global declaration
 hold_facts = {}
 
+
+'''
+Author: Towner Hale
+'''
+
 ##determines if the structure is empty or now
 
 def Remove(duplicate): 
@@ -86,10 +91,11 @@ class Bag_of_words():
         for x in range(1, len(vocab['Vocab'])):
             hold_vocab.append(str(vocab['Vocab'][x]))
             
-            
+
         ##adds the station names to hold_vocab but with to and from, which the user will need to specify    
         for x in range(1, len(station['Station Name'])):
             hold_vocab.append("to " + str(station['Station Name'][x]))
+            # hold_vocab.append(str(station['Station Name'][x]))
             ##print("this is vocab" + str(vocab['Vocab'][x]))
         for x in range(1, len(station['Station Name'])):
             hold_vocab.append("from " + str(station['Station Name'][x])) ##specify to ##specify from   
@@ -101,6 +107,8 @@ class Bag_of_words():
         
         bag_index = 0
         
+        # print(len(hold_vocab))
+
         ##the range 1, len(user_input) will match each nth part of the user_input with what's stored in the bag of words, so every 1st, every two, every 
         ##three words will be compared to the bag of words vectors so it will be able to read long station names and other combinations of words that 
         ## were stored in hold_vocab
@@ -110,14 +118,18 @@ class Bag_of_words():
 
             if (x > 1):
                 user_input= user_input[(x-1):]      ##Will reduce the user input by one word each time it runs through bag of words so it can find different combinations of words grouped together
-            
+            # fills the bag of words with 8064 0's
             bag_of_words = bagofwords(user_input, hold_vocab, len(user_input))
+
+            # print('bag of words ', bag_of_words, 'length: ', len(bag_of_words))
 
             for i in range(1, len(bag_of_words)):
                if bag_of_words[i] > 0:  ##if found a match
+                    # print('bag of words index: ', i)
                     bag_index = i
                     ##print("found: " + str(hold_vocab[bag_index]))
                     token = nltk.word_tokenize(hold_vocab[bag_index])   ##tokenize the found word in hold_vocab that matches 
+                    # print('token: ', token)
                     if token[0] == 'to':        ##finds the destination
                         for i in range(1, len(token)):
                             #if is_empty(hold_facts['destination']): ##has to check if the destination is already stored
@@ -172,5 +184,11 @@ class Bag_of_words():
         hold_facts['destination'] = " ".join(hold_facts['destination'])
         hold_facts['origin'] = Remove(hold_facts['origin']) ##will remove duplicates 
         hold_facts['origin'] = " ".join(hold_facts['origin'])
+
+        if hold_facts['origin'] == '':
+            hold_facts['origin'] = None
+
+        if hold_facts['destination'] == '':
+            hold_facts['destination'] = None
 
         return hold_facts

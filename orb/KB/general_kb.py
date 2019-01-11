@@ -74,7 +74,7 @@ pairs = (
         ),
     ),
     (
-        r'(.*)Weinja',
+        r'(.*)Wenjia',
         (
             "I love Weinja",
         ),
@@ -472,7 +472,7 @@ def ORB_chat():
 def initiate():
     chat_instruction = "Talk to ORB by typing in plain English, using normal upper-\nand lower-case letters and punctuation.  Enter \"quit\" when done."
     init_chat = "Hello. I am ORB and how may I assist you? Perhaps you would like to book a train?"
-    return chat_instruction, init_chat
+    return init_chat
 
 def chat_respond(user_input):
     response = ORB_chatbot.respond(user_input)

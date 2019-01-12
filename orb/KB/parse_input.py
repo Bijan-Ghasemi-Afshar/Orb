@@ -111,6 +111,27 @@ class ParseText:
             user_input = " ".join(modified_text_with_date)
         return userText
 
+
+
+    '''
+    Validate the time and append a time flag
+    '''
+    def timeChecker(self, userText):
+        if ':' in userText:
+            modified_text_with_time = []
+            userText_arr = re.sub("[^\w:]", " ",  userText).split()
+            for user_word in userText_arr:
+                if ':' in user_word:
+                    try:
+                        time_format = "%H:%M"
+                        datetime.datetime.strptime(user_word, time_format).time()
+                        user_word = 'time ' + user_word
+                    except ValueError:
+                        print('time is not in correct format')
+                modified_text_with_time.append(user_word)
+            user_input = " ".join(modified_text_with_time)
+        return userText
+
     '''
     Parse all the input conversation text
     '''
@@ -128,6 +149,7 @@ class ParseText:
         # reduce uppercase text to lower case
         userText = userText.lower()
         userText = self.dateChecker(userText)
+        userText = self.timeChecker(userText)
         # remove all punctuation
         noPunct = ""
         for char in userText:
@@ -146,6 +168,7 @@ class ParseText:
         stop_words.remove('no')
         stop_words.remove('in')
         stop_words.remove('at')
+        stop_words.remove('on')
         for word in conversation:
             if word in stop_words:
                 conversation.remove(word)

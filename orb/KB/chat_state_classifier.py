@@ -24,7 +24,7 @@ def classify_chat(user_input):
 	# 	return ticket_engine
 	# else: # conversation_state[0] == 'Model'
 	# 	return delay_engine
-	return delay_engine
+	return ticket_engine
 
 def store_user_conversation(conversation):
 	current_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")

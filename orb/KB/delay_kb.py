@@ -33,14 +33,14 @@ class DelayModel():
 
         self.find_keywords_and_information()
 
-        print(self.delay_information)
+        # print(self.delay_information)
 
         return self.delay_information
 
         
     def find_keywords_and_information(self):
         tokenized_words = nltk.word_tokenize(self.user_input)
-        print(tokenized_words)
+        # print(tokenized_words)
 
         if self.keyword_exist(tokenized_words):
             for key in self.keywords:

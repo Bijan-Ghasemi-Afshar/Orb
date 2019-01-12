@@ -56,33 +56,32 @@ def response(user_input):
 			return get_current_question()
 
 def get_user_answer(user_input):
-	bag = ticket_kb.Bag_of_words(user_input)
-	hold_facts = bag.read_vocab()
+	ticket_kb_object = ticket_kb.ticket_kb(user_input)
+
+	user_answes_from_kb = ticket_kb_object.get_ticket_information()
 
 	for answer_type in user_answers:
 		if answers['single'] is not None and not answers['single']:
 
 			if answer_type == 'date':
 				if answers[answer_type] is not None:
-					user_answers['return_date'] = hold_facts[answer_type]
+					user_answers['return_date'] = user_answes_from_kb[answer_type]
 				else:
-					user_answers[answer_type] = hold_facts[answer_type]
+					user_answers[answer_type] = user_answes_from_kb[answer_type]
 				
 			elif answer_type == 'time':
 				if answers[answer_type] is not None:
-					user_answers['return_time'] = hold_facts[answer_type]
+					user_answers['return_time'] = user_answes_from_kb[answer_type]
 				else:
-					user_answers[answer_type] = hold_facts[answer_type]
+					user_answers[answer_type] = user_answes_from_kb[answer_type]
 
-			elif answer_type == 'single':
-				user_answers[answer_type] = 'no'
 			elif answer_type == 'return_date' or answer_type == 'return_time':
 				next
 			else:
-				user_answers[answer_type] = hold_facts[answer_type]
+				user_answers[answer_type] = user_answes_from_kb[answer_type]
 			
 		else:
-			user_answers[answer_type] = hold_facts[answer_type]	
+			user_answers[answer_type] = user_answes_from_kb[answer_type]	
 
 def all_questions_answered():
 
@@ -318,6 +317,12 @@ def construct_ticket_url():
 		return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep/{4}/{5}/dep".format(answers['origin'], answers['destination'], date_url_format, time_url_format, return_date_url_format, return_time_url_format)
 	else:
 		return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep".format(answers['origin'], answers['destination'], date_url_format, time_url_format)
+
+def get_current_context():
+    for key in answers:
+        if answers[key] is None:
+            return key
+    return None
 
 def user_answer_confirmation():
 	global additional_information

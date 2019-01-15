@@ -44,6 +44,8 @@ for service_index in service_metric_data['Services']:
 
         origin_station                  = service_index['serviceAttributesMetrics']['origin_location']
         destination_station             = service_index['serviceAttributesMetrics']['destination_location']
+        departure_time                  = service_index['serviceAttributesMetrics']['gbtt_ptd']
+        arrival_time                    = service_index['serviceAttributesMetrics']['gbtt_pta']
         service_detail_data_request     = {"rid":rid}
         service_detail                  = requests.post(service_detail_url, headers=headers, auth=auths, json=service_detail_data_request)
         service_detail_data             = json.loads(service_detail.text)
@@ -52,9 +54,9 @@ for service_index in service_metric_data['Services']:
         for stop in service_detail_data['serviceAttributesDetails']['locations']:
             stops.append(stop['location'])
 
-        service_collection.insert({"rid" : rid, "origin" : origin_station, "destination" : destination_station, "stops" : stops, "date" : date_of_service})
+        service_collection.insert({"rid" : rid, "origin" : origin_station, "destination" : destination_station, "stops" : stops, "departure_time": departure_time, "arrival_time": arrival_time, "date" : date_of_service})
 
-        for stop in service_detail_data['serviceAttributesDetails']['locations']:
-            stop_detail_collection.insert({"name" : stop['location'], "public_departure_time" : stop['gbtt_ptd'], "actual_departure_time": stop['actual_td'], "public_arrival_time": stop['gbtt_pta'], "actual_arrival_time": stop['actual_ta'], "date":date_of_service, "rid": rid})
+        # for stop in service_detail_data['serviceAttributesDetails']['locations']:
+        #     stop_detail_collection.insert({"name" : stop['location'], "public_departure_time" : stop['gbtt_ptd'], "actual_departure_time": stop['actual_td'], "public_arrival_time": stop['gbtt_pta'], "actual_arrival_time": stop['actual_ta'], "date":date_of_service, "rid": rid})
 
     print("Added data for RID: ", rid)

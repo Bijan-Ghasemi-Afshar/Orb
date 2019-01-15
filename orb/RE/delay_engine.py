@@ -17,7 +17,7 @@ answers = {
 questions = {
 	'origin' 		: 'What station did you depart from?',
 	'destination' 	: 'What is your destination?',
-	'time'			: 'What time did you depart from your origin?',
+	'time'			: 'What is the expected arrival time?',
 	'location'		: 'What is your current location?',
 	'delay'			: 'How long have you been delayed for (enter the number of minutes)?'
 }
@@ -34,6 +34,8 @@ additional_information = ""
 
 
 def response(user_input):
+
+    print('user input: ', user_input)
 
     global additional_information
     additional_information = ""
@@ -169,4 +171,14 @@ def get_current_context():
     return None
 
 def predict_delay():
-	pass
+
+    time_format = "%H:%M"
+    delay_time = "00:{0}".format(answers['delay'])
+    arrival_time_object = datetime.datetime.strptime(answers['time'], time_format)
+    delay_minutes = int(answers['delay'])    
+
+    total_delay_time = arrival_time_object + datetime.timedelta(seconds=(60*delay_minutes)) 
+    
+    print('expected time of arrival: ', arrival_time_object, ' delay time: ', delay_minutes)
+
+    return 'Your expected arrival time is: {0}'.format(total_delay_time.time())

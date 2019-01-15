@@ -7,7 +7,7 @@ Historical data assists the prediction values.
 Class that asks the user for their route expected journey time and actual journey time based on know delays.
 ask the user if their more than ONE delay, 
 '''
-import nltk, pymongo, datetime
+import nltk, pymongo, datetime, csv
 # from orb.RE import delay_engine
 # from orb.RE import delay_engine
 
@@ -157,7 +157,7 @@ class DelayModel():
             else:
                 delay_flag = 1
 
-            file.write("{0}, {1}, {2}, {3}, {4}, {5}, {6}\n".format(train_no, route_name, train_service_type, distance, day_of_service, total_delay, delay_flag))
+            file.write("{0},{1},{2},{3},{4},{5},{6},{7},{8}\n".format(train_no, route_name, origin_actual, destination_actual , train_service_type, distance, day_of_service, total_delay, delay_flag))
 
             # print('train no: ', train_no)
             # print('route name: ', route_name)
@@ -167,6 +167,83 @@ class DelayModel():
             # print('total_delay: ', total_delay)
 
         file.close() 
+
+    def get_week_delay_average(self):
+        monday_delay_data = []
+        tuesday_delay_data = []
+        wednesday_delay_data = []
+        thursday_delay_data = []
+        friday_delay_data = []
+        all_delay_data = []
+
+        file = open("weekday_delay.csv","w") 
+
+        with open('graphing_data.csv') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            for row in csv_reader:
+                if row[6] == '0':
+                    monday_delay_data.append(row)
+                elif row[6] == '1':
+                    tuesday_delay_data.append(row)
+                elif row[6] == '2':
+                    wednesday_delay_data.append(row)
+                elif row[6] == '3':
+                    thursday_delay_data.append(row)
+                else: # row[4] == 4:
+                    friday_delay_data.append(row)
+                all_delay_data.append(row)
+
+        average = self.get_average_delay(monday_delay_data)
+        file.write("Monday,{0}\n".format(average))
+        average = self.get_average_delay(tuesday_delay_data)
+        file.write("Tuesday,{0}\n".format(average))
+        average = self.get_average_delay(wednesday_delay_data)
+        file.write("Wednesday,{0}\n".format(average))
+        average = self.get_average_delay(thursday_delay_data)
+        file.write("Thursday,{0}\n".format(average))
+        average = self.get_average_delay(friday_delay_data)
+        file.write("Friday,{0}\n".format(average))
+        average = self.get_average_delay(all_delay_data)
+        file.write("Total,{0}\n".format(average))
+
+
+        file.close()
+
+    def get_week_delay_detail(self):
+        
+        monday_file = open("monday_delay_detail.csv","w") 
+        tuesday_file = open("tuesday_delay_detail.csv","w")
+        wednesday_file = open("wednesday_delay_detail.csv","w")
+        thursday_file = open("thursday_delay_detail.csv","w")
+        friday_file = open("friday_delay_detail.csv","w")
+
+        with open('graphing_data.csv') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            for row in csv_reader:
+                if row[6] == '0':
+                    monday_file.write("Monday,{0},{1}\n".format(row[3], row[7]))
+                elif row[6] == '1':
+                    tuesday_file.write("Tuesday,{0},{1}\n".format(row[3], row[7]))
+                elif row[6] == '2':
+                    wednesday_file.write("Wednesday,{0},{1}\n".format(row[3], row[7]))
+                elif row[6] == '3':
+                    thursday_file.write("Thursday,{0},{1}\n".format(row[3], row[7]))
+                else: # row[4] == 4:
+                    friday_file.write("Friday,{0},{1}\n".format(row[3], row[7]))
+
+        monday_file.close()
+        tuesday_file.close()
+        wednesday_file.close()
+        thursday_file.close()
+        friday_file.close()
+
+
+    def get_average_delay(self, data):
+        total = 0
+        for element in data:
+            total += int(element[5])
+
+        return total/len(data)
 
     def get_station_abr(self, station_name):
         result = orb_database.trainStations.find_one({"name": station_name})
@@ -183,4 +260,8 @@ if __name__ == "__main__":
 
     delay_kb = DelayModel('hello there')
 
-    delay_kb.graphing_data('norwich', 'london liverpool street')
+    # delay_kb.graphing_data('norwich', 'london liverpool street')
+
+    # delay_kb.get_week_delay_average()
+
+    delay_kb.get_week_delay_detail()

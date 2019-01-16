@@ -141,7 +141,7 @@ class DelayModel():
             if destination_actual != '':
                 destination_actual = int(destination_actual)
             else:
-                destination_actual = destination_public
+                destination_actual = int(destination_public)
 
             destination_delay = destination_actual - destination_public
 
@@ -260,8 +260,8 @@ if __name__ == "__main__":
 
     delay_kb = DelayModel('hello there')
 
-    # delay_kb.graphing_data('norwich', 'london liverpool street')
+    delay_kb.graphing_data('norwich', 'london liverpool street')
 
-    # delay_kb.get_week_delay_average()
+    delay_kb.get_week_delay_average()
 
     delay_kb.get_week_delay_detail()

@@ -27,8 +27,47 @@ function userInputSub(){
 
 	});
 
+
+	$("#send-voice-input").on('click', function(){
+
+		sendUserSpeech()
+		$(".chat-area").animate({ scrollTop: $(".chat-area")[0].scrollHeight }, "slow");
+
+	});
+
 }
 
+function sendUserSpeech(){
+	$.ajax({
+		url: '/speechInput',
+		type: 'GET',
+		dataType: 'text',
+	})
+	.done(function(data) {		
+		saveUserChat(data)
+		getChatSpeechResponse(data)
+	})
+	.fail(function() {
+		console.log("error");
+	});
+}
+
+function getChatSpeechResponse(data){
+	$.ajax({
+		url: '/speechResponse',
+		type: 'GET',
+		dataType: 'text',
+		data: {"user_input": data},
+	})
+	.done(function(data) {
+		saveBotChat(data);
+		$(".chat-area").animate({ scrollTop: $(".chat-area")[0].scrollHeight }, "slow");
+		sendSpeechRequest(data)
+	})
+	.fail(function() {
+		console.log("error");
+	});
+}
 
 // Send AJAX request to process chat
 function sendRequest(userInput){
@@ -42,6 +81,7 @@ function sendRequest(userInput){
 	.done(function(data) {		
 		saveBotChat(data);
 		$(".chat-area").animate({ scrollTop: $(".chat-area")[0].scrollHeight }, "slow");
+		sendSpeechRequest(data)
 	})
 	.fail(function() {
 		console.log("error");
@@ -50,6 +90,20 @@ function sendRequest(userInput){
 
 }
 
+// Send AJAX request to speek results
+function sendSpeechRequest(data){
+	$.ajax({
+		url: '/speek',
+		type: 'GET',
+		dataType: 'text',
+		data: {"user_input": data},
+	})
+	.done(function(data) {
+	})
+	.fail(function() {
+		console.log("error");
+	});
+}
 
 // Put user input into the chat area
 function saveUserChat(input){

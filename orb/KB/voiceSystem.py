@@ -1,5 +1,6 @@
 from gtts import gTTS
 import speech_recognition as sr
+# pip install speechrecognition
 import os
 import re
 import webbrowser
@@ -27,8 +28,8 @@ class VoiceProcessor:
         print(text)
         print("called")
         engine = pyttsx3.init()
-        #engine.setProperty('rate', 180)
-        engine.setProperty('volume', 1)
+        engine.setProperty('rate', 140)
+        engine.setProperty('volume', 2)
         engine.say(text)
         engine.runAndWait()
 
@@ -95,7 +96,8 @@ class VoiceProcessor:
                 print('Done!')
             else:
                 pass
-
+        elif 'towner' in command:
+            self.talkToMe('Towner is a monkey he likes to eat nutts')
         elif 'test' in command:
             self.talkToMe('testing 1 2 3')
         elif 'joke' in command:
@@ -113,11 +115,13 @@ class VoiceProcessor:
             if reg_ex:
                 city = reg_ex.group(1)
                 weather = Weather(unit=Unit.CELSIUS)
-                location = weather.lookup_by_location(city)
+                location = weather.lookup_by_location('norwich')
                 
                 condition = location.condition
                 self.talkToMe('The Current weather in %s is %s The tempeture is %.1f degree' % (city, condition.text, (int(condition.temp)-32)/1.8))
 
+        elif 'what are you' in command:
+            self.talkToMe('ORB advanced adaptive ai, built by Bijan and Richard to dominate the train world and make us very rich')
         elif 'weather forecast in' in command:
             reg_ex = re.search('weather forecast in (.*)', command)
             if reg_ex:

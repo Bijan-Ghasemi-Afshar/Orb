@@ -11,3 +11,12 @@ hmmlearn
 pypi
 csvkit
 nltk
+pip install gTTS
+pip install SpeechRecognition
+pip install pyttsx3
+
+sudo apt update && sudo apt install python3-pyaudio
+sudo apt-get install python-all-dev
+sudo apt-get install portaudio19-dev
+
+pip install pyaudio

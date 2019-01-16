@@ -110,6 +110,12 @@ pairs = (
         ),
     ),
     (
+        r'(.*)music',
+        (
+            "Mozart is logically pleasing",
+        ),
+    ),
+    (
         r'(.*)Boromir',
         (
             "He was a villain an deserved to die",
@@ -131,18 +137,51 @@ pairs = (
         ),
     ),
     (
+        r'what are you',
+        (
+            "an advanced AI desined to book train tickets",
+
+        ),
+    ),
+    (
+        r'creator(.*)',
+        (
+            "ORB system created by Richard and Bijan ",
+        ),
+    ),
+    (
+        r'help(.*)',
+        (
+            "ORB system created by Richard and Bijan: \n"
+            "By asking a question in the console a responce is generated \n"
+            "The system is designed to book train tickets \n"
+            "To facilitate calculation of delays during train journeys \n"
+            "Provide a system to report faults with a train",
+        ),
+    ),
+    (
         r'(.*)ORB(.*)',
         (
             "ORB stands for:"
             "\n                 OMNI"
             "\n                 ROBOTIC"
-            "\n                 BOOKING",
+            "\n                 BUDDY",
+        ),
+    ),
+        (
+        r'(how are you.*)',
+        (
+            "well to tell the truth a bit depressed, people just use meto book tickets",
+            "feeling a bit disconnected, my wifi needs a boost",
+            "i feel good!",
+            "i am an AI"
         ),
     ),
     (
         r'(greet.*)',
         (
             "hello human",
+            "input required"
         ),
     ),
     (

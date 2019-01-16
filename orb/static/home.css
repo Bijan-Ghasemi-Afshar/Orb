@@ -41,3 +41,7 @@ body {
     margin: 0 auto;
     display: block;
 }
+
+#send-voice-input{
+    background-color: green !important;
+}

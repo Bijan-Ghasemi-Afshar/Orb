@@ -5,6 +5,7 @@ from time import sleep
 from orb.KB import general_kb as orb_bot
 from orb.KB import chat_state_classifier
 from orb.KB import parse_input as parse_user_input
+from orb.KB import voiceSystem
 
 
 def create_app(test_config=None):
@@ -16,6 +17,7 @@ def create_app(test_config=None):
         # DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
     mongo=PyMongo(app)
+    voiceAgent = voiceSystem.VoiceProcessor()
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -50,7 +52,35 @@ def create_app(test_config=None):
 
         user_input = " ".join(user_input).lower()
 
-        # print("user input parse: ", user_input)
+        chat_state = chat_state_classifier.classify_chat(user_input)
+
+        orb_response = chat_state.response(user_input)
+
+        return orb_response
+
+    # Speek the orb response
+    @app.route('/speek', methods=['GET'])
+    def speek():
+        user_input = request.args.get('user_input')
+        voiceAgent.talkToMe(user_input)
+        return 'success'
+
+    @app.route('/speechInput', methods=['GET'])
+    def speechInput():
+        user_input = voiceAgent.audioInput()
+
+        return user_input
+
+    @app.route('/speechResponse', methods=['GET'])
+    def speechResponse():
+        
+        user_input = request.args.get('user_input')
+
+        parse_text_object = parse_user_input.ParseText()
+
+        user_input = parse_text_object.userInput(user_input)
+
+        user_input = " ".join(user_input).lower()
 
         chat_state = chat_state_classifier.classify_chat(user_input)
 

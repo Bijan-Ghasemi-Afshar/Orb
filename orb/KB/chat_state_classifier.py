@@ -14,17 +14,16 @@ def classify_chat(user_input):
 	
 	# Classify conversation
 	state_classifier = chat_classifier.BotClassifier()
-	# print("User input concatenated: ", user_conversation)
 	conversation_state = state_classifier.classify(user_input)
-	# print('This is the chat state ==> ', conversation_state)
+	print('This is the chat state ==> ', conversation_state)
 
-	# if conversation_state[0] == 'General':
-	# 	return general_engine
-	# elif conversation_state[0] == 'Booking':
-	# 	return ticket_engine
-	# else: # conversation_state[0] == 'Model'
-	# 	return delay_engine
-	return ticket_engine
+	if conversation_state[0] == 'General':
+		return general_engine
+	elif conversation_state[0] == 'Booking':
+		return ticket_engine
+	else: # conversation_state[0] == 'Model'
+		return delay_engine
+	# return ticket_engine
 
 def store_user_conversation(conversation):
 	current_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")

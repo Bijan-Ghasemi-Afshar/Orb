@@ -82,8 +82,11 @@ class DelayModel():
         origin_abbr = self.get_station_abr(origin.lower())
         destination_abbr = self.get_station_abr(destination.lower())
         
+        file.write(',train_no,route_name,departure_time,arrival_time,train_service_type,distance,day_of_service,total_delay,delay_flag\n')
 
+        journey_index = 0
         for journey in orb_database.serviceCollection.find({'origin' : origin_abbr, 'destination' : destination_abbr}):
+            journey_index += 1            
             departure_time = journey['departure_time']
             arrival_time = journey['arrival_time']
 
@@ -157,7 +160,7 @@ class DelayModel():
             else:
                 delay_flag = 1
 
-            file.write("{0},{1},{2},{3},{4},{5},{6},{7},{8}\n".format(train_no, route_name, origin_actual, destination_actual , train_service_type, distance, day_of_service, total_delay, delay_flag))
+            file.write("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}\n".format(journey_index, train_no, route_name, origin_actual, destination_actual , train_service_type, distance, day_of_service, total_delay, delay_flag))
 
             # print('train no: ', train_no)
             # print('route name: ', route_name)
@@ -181,15 +184,15 @@ class DelayModel():
         with open('graphing_data.csv') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             for row in csv_reader:
-                if row[6] == '0':
+                if row[7] == '0':
                     monday_delay_data.append(row)
-                elif row[6] == '1':
+                elif row[7] == '1':
                     tuesday_delay_data.append(row)
-                elif row[6] == '2':
+                elif row[7] == '2':
                     wednesday_delay_data.append(row)
-                elif row[6] == '3':
+                elif row[7] == '3':
                     thursday_delay_data.append(row)
-                else: # row[4] == 4:
+                else: # row[7] == 4:
                     friday_delay_data.append(row)
                 all_delay_data.append(row)
 
@@ -217,19 +220,35 @@ class DelayModel():
         thursday_file = open("thursday_delay_detail.csv","w")
         friday_file = open("friday_delay_detail.csv","w")
 
+        monday_file.write(',Day,Time,delay\n')
+        tuesday_file.write(',Day,Time,delay\n')
+        wednesday_file.write(',Day,Time,delay\n')
+        thursday_file.write(',Day,Time,delay\n')
+        friday_file.write(',Day,Time,delay\n')
+
+        monday_index = 1
+        tuesday_index = 1
+        wednesday_index = 1
+        thursday_index = 1
+        friday_index = 1
         with open('graphing_data.csv') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             for row in csv_reader:
-                if row[6] == '0':
-                    monday_file.write("Monday,{0},{1}\n".format(row[3], row[7]))
-                elif row[6] == '1':
-                    tuesday_file.write("Tuesday,{0},{1}\n".format(row[3], row[7]))
-                elif row[6] == '2':
-                    wednesday_file.write("Wednesday,{0},{1}\n".format(row[3], row[7]))
-                elif row[6] == '3':
-                    thursday_file.write("Thursday,{0},{1}\n".format(row[3], row[7]))
-                else: # row[4] == 4:
-                    friday_file.write("Friday,{0},{1}\n".format(row[3], row[7]))
+                if row[7] == '0':
+                    monday_file.write("{0},Monday,{1},{2}\n".format(monday_index, row[4], row[8]))
+                    monday_index += 1
+                elif row[7] == '1':
+                    tuesday_file.write("{0},Tuesday,{1},{2}\n".format(tuesday_index, row[4], row[8]))
+                    tuesday_index += 1
+                elif row[7] == '2':
+                    wednesday_file.write("{0},Wednesday,{1},{2}\n".format(wednesday_index, row[4], row[8]))
+                    wednesday_index += 1
+                elif row[7] == '3':
+                    thursday_file.write("{0},Thursday,{1},{2}\n".format(thursday_index, row[4], row[8]))
+                    thursday_index += 1
+                else: # row[7] == 4:
+                    friday_file.write("{0},Friday,{0},{1}\n".format(friday_index, row[4], row[8]))
+                    friday_index += 1
 
         monday_file.close()
         tuesday_file.close()
@@ -260,8 +279,8 @@ if __name__ == "__main__":
 
     delay_kb = DelayModel('hello there')
 
-    delay_kb.graphing_data('norwich', 'london liverpool street')
+    # delay_kb.graphing_data('norwich', 'london liverpool street')
 
-    delay_kb.get_week_delay_average()
+    # delay_kb.get_week_delay_average()
 
     delay_kb.get_week_delay_detail()

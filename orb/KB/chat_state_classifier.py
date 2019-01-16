@@ -1,4 +1,4 @@
-from orb.RE import general_engine, ticket_engine, delay_engine
+from orb.RE import general_engine, ticket_engine, delay_engine, fault_engine
 from orb.KB import parse_input as parse_user_input
 from orb.KB import bot_classifier as chat_classifier
 import datetime, pymongo
@@ -17,13 +17,15 @@ def classify_chat(user_input):
 	conversation_state = state_classifier.classify(user_input)
 	print('This is the chat state ==> ', conversation_state)
 
-	if conversation_state[0] == 'General':
-		return general_engine
-	elif conversation_state[0] == 'Booking':
-		return ticket_engine
-	else: # conversation_state[0] == 'Model'
-		return delay_engine
-	# return ticket_engine
+	# if conversation_state[0] == 'General':
+	# 	return general_engine
+	# elif conversation_state[0] == 'Booking':
+	# 	return ticket_engine
+	# elif conversation_state[0] == 'Model':
+	# 	return delay_engine
+	# else: #conversation_state[0] == 'Fault'
+	# 	return fault_engine
+	return fault_engine
 
 def store_user_conversation(conversation):
 	current_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")

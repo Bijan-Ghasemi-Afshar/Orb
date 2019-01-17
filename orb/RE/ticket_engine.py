@@ -57,10 +57,7 @@ def response(user_input):
 		for current_question_type in questions:
 			if answers[current_question_type] is None and user_answers[current_question_type] is not None:
 				if input_is_valid(current_question_type, user_answers):		
-					if current_question_type == 'date':
-						user_input_tok = nltk.word_tokenize(user_answers[current_question_type])
-						answers[current_question_type] = user_input_tok[1]
-					elif current_question_type == 'time':
+					if current_question_type == 'date' or current_question_type == 'time' or current_question_type == 'return_time'or current_question_type == 'return_date':
 						user_input_tok = nltk.word_tokenize(user_answers[current_question_type])
 						answers[current_question_type] = user_input_tok[1]
 					else:
@@ -180,10 +177,8 @@ def validate_destination(user_input):
 Validates the departure date of a journey
 '''
 def validate_date(user_input):
-	print('validating date: ', user_input)
 	user_input = nltk.word_tokenize(user_input)
 	user_input = user_input[1]
-	print('validating date: ', user_input)
 	date_format = "%d/%m/%Y"
 	time_format = "%H:%M"
 	try:
@@ -210,14 +205,8 @@ def validate_date(user_input):
 Validates the departure time of a journey
 '''
 def validate_time(user_input):
-	print('validating time: ', user_input)
 	user_input = nltk.word_tokenize(user_input)
-	print('validating time: ', user_input)
 	user_input = user_input[1]
-	print('validating time: ', user_input)
-	userText = " ".join(user_input)
-	print('validating time: ', user_input)
-
 	date_format = "%d/%m/%Y"
 	time_format = "%H:%M"
 	try:
@@ -255,6 +244,8 @@ def validate_return(user_input):
 Validates the return date of a journey
 '''
 def validate_return_date(user_input):
+	user_input = nltk.word_tokenize(user_input)
+	user_input = user_input[1]	
 	date_format = "%d/%m/%Y"
 	time_format = "%H:%M"
 	try:
@@ -263,22 +254,20 @@ def validate_return_date(user_input):
 		if return_date_object.date() < departure_date_object.date():
 			# print("Return date cannot be before the departure")
 			global additional_information
-			additional_information = "Return date cannot be before the departure"
+			additional_information = "Return date cannot be before the departure.\n"
 			return False
 		elif return_date_object.date() == departure_date_object.date() and answers['return_time'] != None:
 			departure_time_object = datetime.datetime.strptime(answers['time'], time_format).time()
 			return_time_object = datetime.datetime.strptime(answers['return_time'], time_format).time()
 			if return_time_object <= departure_time_object:
-				# print("Retrun time cannot be before the departure")
-				additional_information = "Retrun time cannot be before the departure"
+				additional_information = "Retrun time cannot be before the departure.\n"
 				return False
 			else:
 				return True
 		else:
 			return True
 	except ValueError:
-		additional_information = "Date provided is not in the correct format"
-		# print("Date provided is not in the correct format")
+		additional_information = "Date provided is not in the correct format.\n"
 	return False
 
 
@@ -286,6 +275,10 @@ def validate_return_date(user_input):
 Validates the return time of a journey
 '''
 def validate_return_time(user_input):
+	user_input = nltk.word_tokenize(user_input)
+	print('time return valid: ', user_input)
+	user_input = user_input[1]
+	print('time return valid: ', user_input)
 	date_format = "%d/%m/%Y"
 	time_format = "%H:%M"
 	try:
@@ -296,14 +289,13 @@ def validate_return_time(user_input):
 			departure_date_object = datetime.datetime.strptime(answers['date'], date_format)
 			return_date_object = datetime.datetime.strptime(answers['return_date'], date_format)
 			if return_date_object.date() == departure_date_object.date() and return_time_object <= departure_time_object:
-				# print("Retrun time cannot be before the departure")
 				global additional_information
-				additional_information = "Retrun time cannot be before the departure"
+				additional_information = "Retrun time cannot be before the departure.\n"
 				return False
 
 		return True
 	except ValueError:
-		additional_information = "There was an issue with the time format"
+		additional_information = "There was an issue with the time format.\n"
 		# print("There was an issue with the time format")
 		return False
 
@@ -430,4 +422,4 @@ def user_answer_confirmation():
 	
 	for answer_type in answers:
 		if answers[answer_type] is not None:
-			additional_information += answer_type + ": " + str(answers[answer_type]) + "\n"
+			additional_information += answer_type + ": " + str(answers[answer_type]) + ".\n"

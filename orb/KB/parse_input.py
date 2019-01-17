@@ -98,7 +98,7 @@ class ParseText:
     def dateChecker(self, userText):
         if '/' in userText:
             modified_text_with_date = []
-            userText_arr = re.sub("[^\w/]", " ",  userText).split()
+            userText_arr = re.sub("[^\w/:]", " ",  userText).split()
             for user_word in userText_arr:
                 if '/' in user_word:
                     try:
@@ -119,7 +119,7 @@ class ParseText:
     def timeChecker(self, userText):
         if ':' in userText:
             modified_text_with_time = []
-            userText_arr = re.sub("[^\w:]", " ",  userText).split()
+            userText_arr = re.sub("[^\w:/]", " ",  userText).split()
             for user_word in userText_arr:
                 if ':' in user_word:
                     try:
@@ -136,6 +136,8 @@ class ParseText:
     Parse all the input conversation text
     '''
     def userInput(self, userText):
+
+        print("user raw input: ", userText)
 
         # punctuations = '''!()-[]{};'"\,<>.?@#$%^&*_~'''
         punctuations = '!'
@@ -179,7 +181,7 @@ class ParseText:
         # if stem_flag:
         #     for i in range(len(conversation)):
         #         conversation[i]= stemmer.stem(conversation[i])
-        #     print("Printing the token list 3: " + str(conversation))
+            # print("Printing the token list 3: " + str(conversation))
 
         # lemmentise words
         lammetize_flag = True

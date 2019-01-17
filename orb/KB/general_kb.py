@@ -6,7 +6,9 @@ from nltk.chat.util import Chat, reflections
 # with group-macros labelled as %1, %2 ie %1 = (.*).
 
 
-
+'''
+Holds knowledge about a general conversation and responses
+'''
 pairs = (
 
     (
@@ -498,12 +500,17 @@ pairs = (
 
 ORB_chatbot = Chat(pairs, reflections)
 
-
+'''
+Initiates the conversation with the user
+'''
 def initiate():
     chat_instruction = "Talk to ORB by typing in plain English, using normal upper-\nand lower-case letters and punctuation.  Enter \"quit\" when done."
     init_chat = "Hello. I am ORB and how may I assist you?"
     return init_chat
 
+'''
+Responds to user conversation
+'''
 def chat_respond(user_input):
     response = ORB_chatbot.respond(user_input)
     return response

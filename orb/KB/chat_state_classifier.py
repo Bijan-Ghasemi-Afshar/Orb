@@ -7,7 +7,9 @@ import datetime, pymongo
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 orb_database = client["orbDatabase"]
 
-# Classifies the chat state based on user input and returns the right engine
+''' 
+Classifies the chat state based on user input and returns the right engine
+'''
 def classify_chat(user_input):
 
 	store_user_conversation(user_input)
@@ -31,6 +33,10 @@ def classify_chat(user_input):
 	# return ticket_engine
 	# return delay_engine
 
+
+'''
+Stores user conversation in the database
+'''
 def store_user_conversation(conversation):
 	current_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
 	user_conversation = " ".join(str(word) for word in conversation)

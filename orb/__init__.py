@@ -7,7 +7,12 @@ from orb.KB import chat_state_classifier
 from orb.KB import parse_input as parse_user_input
 from orb.KB import voiceSystem
 
+'''
+Goal: Creates the Flask app and handles application routes.
 
+Action: Sends user input to the right module and recieves its 
+response to present to the user.
+'''
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
@@ -16,6 +21,7 @@ def create_app(test_config=None):
         MONGO_URI="mongodb://localhost:27017/orbDatabase"
         # DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
+    # Create an instance of mongo(database) and voice agent 
     mongo=PyMongo(app)
     voiceAgent = voiceSystem.VoiceProcessor()
 
@@ -32,13 +38,17 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # Home page & initiate the chat with instructions
+    ''' 
+    Home page & initiate the chat with instructions 
+    '''
     @app.route('/')
     def hello():
         orb_init = orb_bot.initiate()
         return render_template('home.html', orb_init=orb_init)
 
-    # User chats with orb; process it; respond to it;
+    ''' 
+    User chats with orb through text; process it; respond to it; 
+    '''
     @app.route('/process', methods=['GET'])
     def process():
 
@@ -58,19 +68,27 @@ def create_app(test_config=None):
 
         return orb_response
 
-    # Speek the orb response
+    ''' 
+    Speek the orb response
+    '''
     @app.route('/speek', methods=['GET'])
     def speek():
         user_input = request.args.get('user_input')
         voiceAgent.talkToMe(user_input)
         return 'success'
 
+    ''' 
+    User chats with orb through voice; presents the user input in text 
+    '''
     @app.route('/speechInput', methods=['GET'])
     def speechInput():
         user_input = voiceAgent.audioInput()
 
         return user_input
 
+    ''' 
+    Responds to voice user input 
+    '''
     @app.route('/speechResponse', methods=['GET'])
     def speechResponse():
         

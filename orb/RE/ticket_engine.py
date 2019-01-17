@@ -2,10 +2,19 @@ import pymongo, datetime, time, requests, re, json, nltk
 from bs4 import BeautifulSoup
 from orb.KB import ticket_kb as ticket_kb
 
+'''
+Goal: Handles user intention to book a train ticket.
+
+Action: Sends user input to Ticket Kowledge Base in order to 
+retrieve information about the ticket, and these information are validate.
+Ticket is found and its information is presented to the user and a link to the ticket.
+'''
+
 # Setup connection to the database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 orb_database = client["orbDatabase"]
 
+# Required information about the ticket that has to be provided by the user
 answers = {
 	'origin' 		: None,
 	'destination' 	: None,
@@ -14,6 +23,7 @@ answers = {
 	'single' 		: None 
 }
 
+# Qustions about each type of ticket information that must be answered
 questions = {
 	'origin' 		: 'What station are you departing from?',
 	'destination' 	: 'What is your destination?',
@@ -22,6 +32,7 @@ questions = {
 	'single'		: 'Would you like a single or return ticket?'
 }
 
+# Ticket information that has been retrieved from user input by the Ticket KB that needs to be validated
 user_answers = {
 	'origin'		: None,
 	'destination' 	: None,
@@ -62,6 +73,9 @@ def response(user_input):
 		else:
 			return get_current_question()
 
+'''
+Sends user input to Ticket Kowledge Base to retrieve ticket information
+'''
 def get_user_answer(user_input):
 	ticket_kb_object = ticket_kb.ticket_kb(user_input)
 
@@ -90,6 +104,10 @@ def get_user_answer(user_input):
 		else:
 			user_answers[answer_type] = user_answes_from_kb[answer_type]	
 
+
+'''
+Checks whether all required questions have been answered
+'''
 def all_questions_answered():
 
 	# If it is a return ticket add extra questions and question types
@@ -105,6 +123,10 @@ def all_questions_answered():
 
 	return True
 
+
+'''
+Directs ticket information provided by the user to the correct validation process
+'''
 def input_is_valid(current_question_type, user_answers):	# TODO: Add validation to other question types and answers
 
 	if current_question_type 	== 'origin':
@@ -122,8 +144,12 @@ def input_is_valid(current_question_type, user_answers):	# TODO: Add validation 
 	else: # current_question_type == 'single'
 		return validate_return(user_answers[current_question_type])
 
+
+'''
+Validates the origin of a journey
+'''
 def validate_origin(user_input):
-	station_name = get_station_abr(user_input)
+	station_name = get_station_name(user_input)
 	if station_name == None:
 		global additional_information
 		additional_information += "No station was found!\n"
@@ -131,8 +157,12 @@ def validate_origin(user_input):
 	else:
 		return True	
 
+
+'''
+Validates the destination of a journey
+'''
 def validate_destination(user_input):
-	station_name = get_station_abr(user_input)
+	station_name = get_station_name(user_input)
 	if station_name == None:
 		global additional_information
 		additional_information += "No station was found!\n"
@@ -145,6 +175,10 @@ def validate_destination(user_input):
 			additional_information += "Destination cannot be the same as origin\n"
 			return False
 
+
+'''
+Validates the departure date of a journey
+'''
 def validate_date(user_input):
 	print('validating date: ', user_input)
 	user_input = nltk.word_tokenize(user_input)
@@ -171,6 +205,10 @@ def validate_date(user_input):
 		additional_information += "Date provided is not in the correct format\n"
 	return False
 
+
+'''
+Validates the departure time of a journey
+'''
 def validate_time(user_input):
 	print('validating time: ', user_input)
 	user_input = nltk.word_tokenize(user_input)
@@ -198,6 +236,10 @@ def validate_time(user_input):
 		additional_information += "There was an issue with the time format\n"
 		return False
 
+
+'''
+Validates whether information clarifies the type of ticket
+'''
 def validate_return(user_input):
 	if 'yes' in user_input:
 		user_answers['single'] = True
@@ -208,6 +250,10 @@ def validate_return(user_input):
 	else:
 		return False
 
+
+'''
+Validates the return date of a journey
+'''
 def validate_return_date(user_input):
 	date_format = "%d/%m/%Y"
 	time_format = "%H:%M"
@@ -235,6 +281,10 @@ def validate_return_date(user_input):
 		# print("Date provided is not in the correct format")
 	return False
 
+
+'''
+Validates the return time of a journey
+'''
 def validate_return_time(user_input):
 	date_format = "%d/%m/%Y"
 	time_format = "%H:%M"
@@ -257,18 +307,30 @@ def validate_return_time(user_input):
 		# print("There was an issue with the time format")
 		return False
 
-def get_station_abr(station_name):
+
+'''
+Gets the name of a train station
+'''
+def get_station_name(station_name):
 	result = orb_database.trainStations.find_one({"name": station_name})
 	if result != None:
 		return result["name"]
 	else:
 		return None
 
+
+'''
+Gets the next question that has to be asked by the system about the ticket
+'''
 def get_current_question():
 	for current_question_type in questions:
 		if answers[current_question_type] == None:
 			return additional_information + questions[current_question_type]
 
+
+'''
+Finds the ticket online and retrieves its information
+'''
 def get_ticket_information():
 	print('constructing url')
 	ticket_url_request = construct_ticket_url()
@@ -303,6 +365,10 @@ def get_ticket_information():
 
 	return ticket_result
 
+
+'''
+Handle user confirmation about the ticket presented
+'''
 def handle_user_confirmation(user_input):
 	if 'yes' in user_input:
 		ticket_link = "<a href=\"{0}\" target=\"_blank\">Ticket</a>".format(construct_ticket_url())
@@ -314,6 +380,10 @@ def handle_user_confirmation(user_input):
 	else:
 		return "Would you like this ticket?"
 
+
+'''
+Reset the process of booking a ticket
+'''
 def reset_answers():
 	answers.pop("return_date", None)
 	answers.pop("return_time", None)
@@ -324,6 +394,10 @@ def reset_answers():
 	for answer_type in answers:
 		answers[answer_type] = None
 
+
+'''
+Construct the URL to the ticket
+'''
 def construct_ticket_url():
 	date_object = datetime.datetime.strptime(answers['date'], "%d/%m/%Y").date()
 	date_url_format = date_object.strftime("%d%m%y")
@@ -337,12 +411,20 @@ def construct_ticket_url():
 	else:
 		return "http://ojp.nationalrail.co.uk/service/timesandfares/{0}/{1}/{2}/{3}/dep".format(answers['origin'], answers['destination'], date_url_format, time_url_format)
 
+
+'''
+Get the current type information that is needed to be provided by the user
+'''
 def get_current_context():
     for key in answers:
         if answers[key] is None:
             return key
     return None
 
+
+'''
+Provide confirmation about the ticket information provided by the user
+'''
 def user_answer_confirmation():
 	global additional_information
 	

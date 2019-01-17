@@ -34,6 +34,9 @@ class DelayModel():
             'location'		: "in"
         }
 
+    '''
+    Retrieves delay information from user input
+    '''
     def get_delay_information(self):
 
         self.find_keywords_and_information()
@@ -42,7 +45,9 @@ class DelayModel():
 
         return self.delay_information
 
-        
+    '''
+    Finds keywords within the user input and gets journey information after keyword
+    '''
     def find_keywords_and_information(self):
         tokenized_words = nltk.word_tokenize(self.user_input)
         # print(tokenized_words)
@@ -63,18 +68,27 @@ class DelayModel():
             from orb.RE import delay_engine
             self.delay_information[delay_engine.get_current_context()] = self.user_input
 
+    '''
+    Checks whether keyword exists within user input
+    '''
     def keyword_exist(self, tokenized_words):
         for key in self.keywords:
             if self.keywords[key] in tokenized_words:
                 return True
         return False
 
+    '''
+    Checks whether a word is a keyword or not
+    '''
     def is_not_keyword(self, word):
         for key in self.keywords:
             if word == self.keywords[key]:
                 return False
         return True
 
+    '''
+    Retrieves graphing data from the historical data in the database
+    '''
     def graphing_data(self, origin, destination):
 
         file = open("graphing_data.csv","w") 
@@ -172,6 +186,9 @@ class DelayModel():
 
         file.close() 
 
+    '''
+    Get the average delay of a week
+    '''
     def get_week_delay_average(self):
         monday_delay_data = []
         tuesday_delay_data = []
@@ -213,6 +230,9 @@ class DelayModel():
 
         file.close()
 
+    '''
+    Gets delay details of a week
+    '''
     def get_week_delay_detail(self):
         
         monday_file = open("monday_delay_detail.csv","w") 
@@ -257,7 +277,9 @@ class DelayModel():
         thursday_file.close()
         friday_file.close()
 
-
+    '''
+    Gets the whole average delay of historical data
+    '''
     def get_average_delay(self, data):
         total = 0
         for element in data:
@@ -265,6 +287,9 @@ class DelayModel():
 
         return total/len(data)
 
+    '''
+    Gets the station abbreviation
+    '''
     def get_station_abr(self, station_name):
         result = orb_database.trainStations.find_one({"name": station_name})
         if result != None:

@@ -24,6 +24,10 @@ class ticket_kb():
             'time' 			: 'at'
         }
 
+
+    '''
+    Retrieves ticket information from user input
+    '''
     def get_ticket_information(self):
 
         self.find_keywords_and_information()
@@ -32,7 +36,9 @@ class ticket_kb():
 
         return self.ticket_information
 
-        
+    '''
+    Finds keywords within the user input and gets piece of information after that
+    '''
     def find_keywords_and_information(self):
         tokenized_words = nltk.word_tokenize(self.user_input)
         # print(tokenized_words)
@@ -64,13 +70,19 @@ class ticket_kb():
         if 'return' in tokenized_words:
             self.ticket_information['single'] = 'no'
 
-
+    '''
+    Checks whether a keyword exists within the user input
+    '''
     def keyword_exist(self, tokenized_words):
         for key in self.keywords:
             if self.keywords[key] in tokenized_words:
                 return True
         return False
 
+
+    '''
+    Checks whether a word is a keyword
+    '''
     def is_not_keyword(self, word):
         for key in self.keywords:
             if word == self.keywords[key]:

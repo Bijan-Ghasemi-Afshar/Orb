@@ -2,11 +2,18 @@ import pymongo, datetime, time, requests, re, json
 from orb.KB import delay_kb
 from orb.KB import modelRegression
 
+'''
+Goal: Handles user intention to know estimated arrival time based on delay.
+
+Action: Sends user input to Delay Kowledge Base in order to 
+retrieve journey data and a coefficient that can be used to estimate the arrival time.
+'''
+
 # Setup connection to the database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 orb_database = client["orbDatabase"]
 
-
+# Required information about the journey and delay that has to be provided by the user
 answers = {
 	'origin' 		: None,
 	'destination' 	: None,
@@ -15,6 +22,7 @@ answers = {
 	'delay'			: None
 }
 
+# Qustions about each type of journey information that must be answered
 questions = {
 	'origin' 		: 'What station did you depart from?',
 	'destination' 	: 'What is your destination?',
@@ -23,6 +31,7 @@ questions = {
 	'delay'			: 'How long have you been delayed for (enter the number of minutes)?'
 }
 
+# Ticket information that has been retrieved from user input by the Delay KB that needs to be validated
 user_answers = {
 	'origin' 		: None,
 	'destination' 	: None,
@@ -67,6 +76,10 @@ def response(user_input):
     
     return "I'm the delay engine"
 
+
+'''
+Checks whether all required questions have been answered
+'''
 def all_questions_answered():
 	for key in answers:
 		if answers[key] == None:
@@ -74,12 +87,19 @@ def all_questions_answered():
 
 	return True
 
+
+'''
+Gets the next question that has to be asked by the system about the journey
+'''
 def get_current_question():
 	for current_question_type in questions:
 		if answers[current_question_type] == None:
 			return additional_information + questions[current_question_type]
 
 
+'''
+Directs journey information provided by the user to the correct validation process
+'''
 def input_is_valid(current_question_type, user_answers):
 	
     if current_question_type 	== 'origin':
@@ -94,8 +114,11 @@ def input_is_valid(current_question_type, user_answers):
         return validate_delay(user_answers[current_question_type])
 
 
+'''
+Validates the origin of a journey
+'''
 def validate_origin(user_input):
-	station_abr = get_station_abr(user_input)
+	station_abr = get_station_name(user_input)
 	if station_abr == None:
 		global additional_information
 		additional_information += "Please enter a station name!\n"
@@ -103,8 +126,12 @@ def validate_origin(user_input):
 	else:
 		return True
 
+
+'''
+Validates the destination of a journey
+'''
 def validate_destination(user_input):
-    station_abr = get_station_abr(user_input)
+    station_abr = get_station_name(user_input)
     if station_abr == None:
 	    global additional_information
 	    additional_information += "Please enter a station name!\n"
@@ -117,6 +144,10 @@ def validate_destination(user_input):
     		additional_information += "Destination cannot be the same as origin\n"
     		return False
 
+
+'''
+Validates the departure time of a journey
+'''
 def validate_time(user_input):
     time_format = "%H:%M"
     try:
@@ -127,8 +158,12 @@ def validate_time(user_input):
         additional_information += "There was an issue with the time format\n"
         return False
 
+
+'''
+Validates the location of the user
+'''
 def validate_location(user_input):
-    station_name = get_station_abr(user_input)
+    station_name = get_station_name(user_input)
     if station_name == None:
         global additional_information
         additional_information += "Please enter a station name!\n"
@@ -140,6 +175,10 @@ def validate_location(user_input):
         else:
             return True
 
+
+'''
+Validates the delay of a journey
+'''
 def validate_delay(user_input):
     # TODO: parse text needs to keep numbers for minutes of delay
     user_input = int(user_input)
@@ -150,17 +189,29 @@ def validate_delay(user_input):
     else:
         return True
 
-def get_station_abr(station_name):
+
+'''
+Gets the name of a train station
+'''
+def get_station_name(station_name):
 	result = orb_database.trainStations.find_one({"name": station_name})
 	if result != None:
 		return result["name"]
 	else:
 		return None
 
+
+'''
+Reset the process of estimating the arrival time based on a delay
+'''
 def reset_answers():
 	for answer_type in answers:
 		answers[answer_type] = None
 
+
+'''
+Provide confirmation about the ticket information provided by the user
+'''
 def user_answer_confirmation():
 	global additional_information
 	
@@ -168,12 +219,20 @@ def user_answer_confirmation():
 		if answers[answer_type] is not None:
 			additional_information += answer_type + ": " + str(answers[answer_type]) + "\n"
 
+'''
+Get the current type information that is needed to be provided by the user
+'''
 def get_current_context():
     for key in answers:
         if answers[key] is None:
             return key
     return None
 
+
+'''
+Sends journey information to Delay KB to retrieve a coefficient that is used
+to predict the estimated arrival time
+'''
 def predict_delay():
 
     delay_factor = modelRegression.get_delay_factor() * 100

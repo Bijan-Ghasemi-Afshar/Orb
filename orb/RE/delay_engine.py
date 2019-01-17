@@ -54,7 +54,7 @@ def response(user_input):
             if answers[current_question_type] is None and user_answers[current_question_type] is not None:
                 if input_is_valid(current_question_type, user_answers):					
                     if current_question_type == 'time':
-                        # user_input_tok = nltk.word_tokenize(user_answers[current_question_type])                        
+                        user_input_tok = nltk.word_tokenize(user_answers[current_question_type])                        
                     else:
                         answers[current_question_type] = user_answers[current_question_type]
 

@@ -59,7 +59,7 @@ class DelayModel():
                     for words_after_keyword in range((keyword_index+1), len(tokenized_words)):
                         if self.is_not_keyword(tokenized_words[words_after_keyword]):
                             if self.delay_information[key] is None:
-                                self.delay_information[key] = nltk.tokenized_words[words_after_keyword]
+                                self.delay_information[key] = tokenized_words[words_after_keyword]
                             else:
                                 self.delay_information[key] = ' '.join([self.delay_information[key],tokenized_words[words_after_keyword]])
                         else:

@@ -149,7 +149,7 @@ def validate_origin(user_input):
 	station_name = get_station_name(user_input)
 	if station_name == None:
 		global additional_information
-		additional_information += "No station was found!\n"
+		additional_information += "Please enter a station name.\n"
 		return False
 	else:
 		return True	
@@ -162,14 +162,14 @@ def validate_destination(user_input):
 	station_name = get_station_name(user_input)
 	if station_name == None:
 		global additional_information
-		additional_information += "No station was found!\n"
+		additional_information += "Please enter a station name.\n"
 		return False
 	else:
 		if station_name != answers['origin']:
 			return True
 		else:
 			# print("Destination cannot be the same as origin")
-			additional_information += "Destination cannot be the same as origin\n"
+			additional_information += "Destination cannot be the same as origin.\n"
 			return False
 
 
@@ -275,10 +275,8 @@ def validate_return_date(user_input):
 Validates the return time of a journey
 '''
 def validate_return_time(user_input):
-	user_input = nltk.word_tokenize(user_input)
-	print('time return valid: ', user_input)
-	user_input = user_input[1]
-	print('time return valid: ', user_input)
+	user_input = nltk.word_tokenize(user_input)	
+	user_input = user_input[1]	
 	date_format = "%d/%m/%Y"
 	time_format = "%H:%M"
 	try:

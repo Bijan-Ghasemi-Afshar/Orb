@@ -63,7 +63,8 @@ def response(user_input):
             if answers[current_question_type] is None and user_answers[current_question_type] is not None:
                 if input_is_valid(current_question_type, user_answers):					
                     if current_question_type == 'time':
-                        user_input_tok = nltk.word_tokenize(user_answers[current_question_type])                        
+                        user_input_tok = nltk.word_tokenize(user_answers[current_question_type])
+                        answers[current_question_type] = user_input_tok[1]
                     else:
                         answers[current_question_type] = user_answers[current_question_type]
 
@@ -121,7 +122,7 @@ def validate_origin(user_input):
 	station_abr = get_station_name(user_input)
 	if station_abr == None:
 		global additional_information
-		additional_information += "Please enter a station name!\n"
+		additional_information += "Please enter a station name.\n"
 		return False
 	else:
 		return True
@@ -134,7 +135,7 @@ def validate_destination(user_input):
     station_abr = get_station_name(user_input)
     if station_abr == None:
 	    global additional_information
-	    additional_information += "Please enter a station name!\n"
+	    additional_information += "Please enter a station name.\n"
 	    return False
     else:
 	    if station_abr != answers['origin']:
@@ -149,6 +150,8 @@ def validate_destination(user_input):
 Validates the departure time of a journey
 '''
 def validate_time(user_input):
+    user_input = nltk.word_tokenize(user_input)
+    user_input = user_input[1]
     time_format = "%H:%M"
     try:
         datetime.datetime.strptime(user_input, time_format).time()
@@ -166,11 +169,11 @@ def validate_location(user_input):
     station_name = get_station_name(user_input)
     if station_name == None:
         global additional_information
-        additional_information += "Please enter a station name!\n"
+        additional_information += "Please enter a station name.\n"
         return False
     else:
         if station_name == answers['destination']:
-            additional_information += "You cannot be at the end of your journey and ask for predicting the delay!\n"
+            additional_information += "You cannot be at the end of your journey and ask for predicting the delay.\n"
             return False
         else:
             return True
@@ -184,7 +187,7 @@ def validate_delay(user_input):
     user_input = int(user_input)
     if user_input <= 0:
         global additional_information
-        additional_information += "Delay cannot be under 1 minute!\n"
+        additional_information += "Delay cannot be under 1 minute.\n"
         return False
     else:
         return True
@@ -217,7 +220,7 @@ def user_answer_confirmation():
 	
 	for answer_type in answers:
 		if answers[answer_type] is not None:
-			additional_information += answer_type + ": " + str(answers[answer_type]) + "\n"
+			additional_information += answer_type + ": " + str(answers[answer_type]) + ".\n"
 
 '''
 Get the current type information that is needed to be provided by the user
@@ -241,15 +244,13 @@ def predict_delay():
 
     total_amount_of_delay = int(delay_minutes*delay_factor)
 
-    print('delay_factor: ', delay_factor, ' delay minutes: ', delay_minutes, ' total_delay: ', delay_minutes*delay_factor)
-
     time_format = "%H:%M"
     delay_time = "00:{0}".format(answers['delay'])
     arrival_time_object = datetime.datetime.strptime(answers['time'], time_format)
     delay_minutes = int(answers['delay'])    
 
     total_delay_time = arrival_time_object + datetime.timedelta(seconds=(60*total_amount_of_delay)) 
-    
-    print('expected time of arrival: ', arrival_time_object, ' delay time: ', delay_minutes)
+
+    reset_answers()
 
     return 'Your expected arrival time is: {0}'.format(total_delay_time.time())

@@ -108,7 +108,7 @@ class ParseText:
                     except ValueError:
                         print('date is not in correct format')
                 modified_text_with_date.append(user_word)
-            user_input = " ".join(modified_text_with_date)
+            userText = " ".join(modified_text_with_date)
         return userText
 
 
@@ -129,7 +129,7 @@ class ParseText:
                     except ValueError:
                         print('time is not in correct format')
                 modified_text_with_time.append(user_word)
-            user_input = " ".join(modified_text_with_time)
+            userText = " ".join(modified_text_with_time)
         return userText
 
     '''
@@ -189,11 +189,11 @@ class ParseText:
             # print("Printing from token list 4:"+ str(conversation))
 
         # spell check the text
-        if ParseText.spelling == True:
-            #print("spell test")
-            for j in range(len(conversation)):
-                #  conversation[j]= stemmer.stem(spell(conversation[j]))
-                 conversation[j] = lemmatizer.lemmatize(spell(conversation[j]))
+        # if ParseText.spelling == True:
+        #     #print("spell test")
+        #     for j in range(len(conversation)):
+        #         #  conversation[j]= stemmer.stem(spell(conversation[j]))
+        #          conversation[j] = lemmatizer.lemmatize(spell(conversation[j]))
 
             # print("Printing the token list 5: " + str(conversation))
         return conversation

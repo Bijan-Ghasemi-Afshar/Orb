@@ -1,5 +1,6 @@
 import pymongo, datetime, time, requests, re, json
 from orb.KB import delay_kb
+from orb.KB import modelRegression
 
 # Setup connection to the database
 client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -52,7 +53,10 @@ def response(user_input):
         for current_question_type in questions:
             if answers[current_question_type] is None and user_answers[current_question_type] is not None:
                 if input_is_valid(current_question_type, user_answers):					
-                    answers[current_question_type] = user_answers[current_question_type]
+                    if current_question_type == 'time':
+                        # user_input_tok = nltk.word_tokenize(user_answers[current_question_type])                        
+                    else:
+                        answers[current_question_type] = user_answers[current_question_type]
 
         user_answer_confirmation()
         # Check again to see if all questions are answered
@@ -172,12 +176,20 @@ def get_current_context():
 
 def predict_delay():
 
+    delay_factor = modelRegression.get_delay_factor() * 100
+
+    delay_minutes = int(answers['delay'])
+
+    total_amount_of_delay = int(delay_minutes*delay_factor)
+
+    print('delay_factor: ', delay_factor, ' delay minutes: ', delay_minutes, ' total_delay: ', delay_minutes*delay_factor)
+
     time_format = "%H:%M"
     delay_time = "00:{0}".format(answers['delay'])
     arrival_time_object = datetime.datetime.strptime(answers['time'], time_format)
     delay_minutes = int(answers['delay'])    
 
-    total_delay_time = arrival_time_object + datetime.timedelta(seconds=(60*delay_minutes)) 
+    total_delay_time = arrival_time_object + datetime.timedelta(seconds=(60*total_amount_of_delay)) 
     
     print('expected time of arrival: ', arrival_time_object, ' delay time: ', delay_minutes)
 

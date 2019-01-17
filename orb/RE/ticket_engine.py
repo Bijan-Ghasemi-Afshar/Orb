@@ -1,4 +1,4 @@
-import pymongo, datetime, time, requests, re, json
+import pymongo, datetime, time, requests, re, json, nltk
 from bs4 import BeautifulSoup
 from orb.KB import ticket_kb as ticket_kb
 
@@ -45,8 +45,15 @@ def response(user_input):
 	else:
 		for current_question_type in questions:
 			if answers[current_question_type] is None and user_answers[current_question_type] is not None:
-				if input_is_valid(current_question_type, user_answers):					
-					answers[current_question_type] = user_answers[current_question_type]
+				if input_is_valid(current_question_type, user_answers):		
+					if current_question_type == 'date':
+						user_input_tok = nltk.word_tokenize(user_answers[current_question_type])
+						answers[current_question_type] = user_input_tok[1]
+					elif current_question_type == 'time':
+						user_input_tok = nltk.word_tokenize(user_answers[current_question_type])
+						answers[current_question_type] = user_input_tok[1]
+					else:
+						answers[current_question_type] = user_answers[current_question_type]
 
 		user_answer_confirmation()
 		# Check again to see if all questions are answered
@@ -139,6 +146,10 @@ def validate_destination(user_input):
 			return False
 
 def validate_date(user_input):
+	print('validating date: ', user_input)
+	user_input = nltk.word_tokenize(user_input)
+	user_input = user_input[1]
+	print('validating date: ', user_input)
 	date_format = "%d/%m/%Y"
 	time_format = "%H:%M"
 	try:
@@ -161,6 +172,14 @@ def validate_date(user_input):
 	return False
 
 def validate_time(user_input):
+	print('validating time: ', user_input)
+	user_input = nltk.word_tokenize(user_input)
+	print('validating time: ', user_input)
+	user_input = user_input[1]
+	print('validating time: ', user_input)
+	userText = " ".join(user_input)
+	print('validating time: ', user_input)
+
 	date_format = "%d/%m/%Y"
 	time_format = "%H:%M"
 	try:

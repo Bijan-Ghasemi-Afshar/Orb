@@ -6,7 +6,7 @@ import re
 import webbrowser
 import smtplib
 import requests
-from weather import Weather, Unit 
+# from weather import Weather, Unit 
 import pyttsx3
 # pip install weather-api
 
@@ -110,29 +110,29 @@ class VoiceProcessor:
             else:
                 self.talkToMe('oops!I ran out of jokes')
 
-        elif 'current weather in' in command:
-            reg_ex = re.search('current weather in (.*)', command)
-            if reg_ex:
-                city = reg_ex.group(1)
-                weather = Weather(unit=Unit.CELSIUS)
-                location = weather.lookup_by_location('norwich')
+        # elif 'current weather in' in command:
+        #     reg_ex = re.search('current weather in (.*)', command)
+        #     if reg_ex:
+        #         city = reg_ex.group(1)
+        #         weather = Weather(unit=Unit.CELSIUS)
+        #         location = weather.lookup_by_location('norwich')
                 
-                condition = location.condition
-                self.talkToMe('The Current weather in %s is %s The tempeture is %.1f degree' % (city, condition.text, (int(condition.temp)-32)/1.8))
+        #         condition = location.condition
+        #         self.talkToMe('The Current weather in %s is %s The tempeture is %.1f degree' % (city, condition.text, (int(condition.temp)-32)/1.8))
 
         elif 'what are you' in command:
             self.talkToMe('ORB advanced adaptive ai, built by Bijan and Richard to dominate the train world and make us very rich')
-        elif 'weather forecast in' in command:
-            reg_ex = re.search('weather forecast in (.*)', command)
-            if reg_ex:
-                city = reg_ex.group(1)
-                weather = Weather()
-                print(weather)
-                location = weather.lookup_by_location(city)
-                forecasts = location.forecast
-                for i in range(0,3):
-                    self.talkToMe('On %s will it %s. The maximum temperture will be %.1f degree.'
-                            'The lowest temperature will be %.1f degrees.' % (forecasts[i].date(), forecasts[i].text(), (int(forecasts[i].high())-32)/1.8, (int(forecasts[i].low())-32)/1.8))
+        # elif 'weather forecast in' in command:
+        #     reg_ex = re.search('weather forecast in (.*)', command)
+        #     if reg_ex:
+        #         city = reg_ex.group(1)
+        #         weather = Weather()
+        #         print(weather)
+        #         location = weather.lookup_by_location(city)
+        #         forecasts = location.forecast
+        #         for i in range(0,3):
+        #             self.talkToMe('On %s will it %s. The maximum temperture will be %.1f degree.'
+        #                     'The lowest temperature will be %.1f degrees.' % (forecasts[i].date(), forecasts[i].text(), (int(forecasts[i].high())-32)/1.8, (int(forecasts[i].low())-32)/1.8))
         return state
 
 

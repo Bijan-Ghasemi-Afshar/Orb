@@ -54,12 +54,13 @@ class DelayModel():
                     for words_after_keyword in range((keyword_index+1), len(tokenized_words)):
                         if self.is_not_keyword(tokenized_words[words_after_keyword]):
                             if self.delay_information[key] is None:
-                                self.delay_information[key] = tokenized_words[words_after_keyword]
+                                self.delay_information[key] = nltk.tokenized_words[words_after_keyword]
                             else:
                                 self.delay_information[key] = ' '.join([self.delay_information[key],tokenized_words[words_after_keyword]])
                         else:
                             break
         else:
+            from orb.RE import delay_engine
             self.delay_information[delay_engine.get_current_context()] = self.user_input
 
     def keyword_exist(self, tokenized_words):
@@ -247,7 +248,7 @@ class DelayModel():
                     thursday_file.write("{0},Thursday,{1},{2}\n".format(thursday_index, row[4], row[8]))
                     thursday_index += 1
                 else: # row[7] == 4:
-                    friday_file.write("{0},Friday,{0},{1}\n".format(friday_index, row[4], row[8]))
+                    friday_file.write("{0},Friday,{1},{2}\n".format(friday_index, row[4], row[8]))
                     friday_index += 1
 
         monday_file.close()

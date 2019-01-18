@@ -1,5 +1,5 @@
 # Orb
-A simple chat-bot system
+A simple chat-bot system for booking tickets and predicting estimated arrival time based on journey delay
 
 ## Requirements
 1. Python 3.6

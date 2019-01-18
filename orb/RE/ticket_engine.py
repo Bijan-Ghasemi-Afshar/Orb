@@ -326,34 +326,40 @@ def get_ticket_information():
 	ticket_url_request = construct_ticket_url()
 	print(ticket_url_request)
 
-	# Sending a GET request to get ticket information
-	r = requests.get(ticket_url_request)
-	html_results = BeautifulSoup(r.text, 'html.parser')
+	try:
 
-	outbound_tickets = html_results.find("table", {"id": "oft"})
-	outbound_tickets = outbound_tickets.findAll("td", class_="has-cheapest")[0]
-	ticket_data = outbound_tickets.find('script')
-	ticket_data = ''.join(ticket_data.findAll(text=True))
-	ticket_data = json.loads(ticket_data)
-	out_ticket_price = ticket_data['singleJsonFareBreakdowns'][0]['fullFarePrice']
-	out_ticket_dep_time = ticket_data['jsonJourneyBreakdown']['departureTime']
-	out_ticket_arr_time = ticket_data['jsonJourneyBreakdown']['arrivalTime']
+		# Sending a GET request to get ticket information
+		r = requests.get(ticket_url_request)
+		html_results = BeautifulSoup(r.text, 'html.parser')
 
-	if not answers['single']:
-		return_ticket = html_results.find("table", {"id": "ift"})
-		return_ticket = return_ticket.findAll("td", class_="has-cheapest")[0]
-		ticket_data = return_ticket.find('script')
+		outbound_tickets = html_results.find("table", {"id": "oft"})
+		outbound_tickets = outbound_tickets.findAll("td", class_="has-cheapest")[0]
+		ticket_data = outbound_tickets.find('script')
 		ticket_data = ''.join(ticket_data.findAll(text=True))
-		ticket_data = re.sub('%s', '', ticket_data)
 		ticket_data = json.loads(ticket_data)
-		ret_ticket_price = ticket_data['singleJsonFareBreakdowns'][0]['fullFarePrice']
-		ret_ticket_dep_time = ticket_data['jsonJourneyBreakdown']['departureTime']
-		ret_ticket_arr_time = ticket_data['jsonJourneyBreakdown']['arrivalTime']
-		ticket_result = "Outbound ticket price of £{0} which departs at {1} and arrives at {2} and a return ticket with price of £{3} which departs at {4} and arrives at {5} have been found. Would you like these tickets?".format(out_ticket_price, out_ticket_dep_time, out_ticket_arr_time, ret_ticket_price, ret_ticket_dep_time, ret_ticket_arr_time)
-	else:
-		ticket_result = "Cheapest ticket price of £{0} which departs at {1} and arrives at {2}. Would you like this ticket?".format(out_ticket_price, out_ticket_dep_time, out_ticket_arr_time)
+		out_ticket_price = ticket_data['singleJsonFareBreakdowns'][0]['fullFarePrice']
+		out_ticket_dep_time = ticket_data['jsonJourneyBreakdown']['departureTime']
+		out_ticket_arr_time = ticket_data['jsonJourneyBreakdown']['arrivalTime']
 
-	return ticket_result
+		if not answers['single']:
+			return_ticket = html_results.find("table", {"id": "ift"})
+			return_ticket = return_ticket.findAll("td", class_="has-cheapest")[0]
+			ticket_data = return_ticket.find('script')
+			ticket_data = ''.join(ticket_data.findAll(text=True))
+			ticket_data = re.sub('%s', '', ticket_data)
+			ticket_data = json.loads(ticket_data)
+			ret_ticket_price = ticket_data['singleJsonFareBreakdowns'][0]['fullFarePrice']
+			ret_ticket_dep_time = ticket_data['jsonJourneyBreakdown']['departureTime']
+			ret_ticket_arr_time = ticket_data['jsonJourneyBreakdown']['arrivalTime']
+			ticket_result = "Outbound ticket price of £{0} which departs at {1} and arrives at {2} and a return ticket with price of £{3} which departs at {4} and arrives at {5} have been found. Would you like these tickets?".format(out_ticket_price, out_ticket_dep_time, out_ticket_arr_time, ret_ticket_price, ret_ticket_dep_time, ret_ticket_arr_time)
+		else:
+			ticket_result = "Cheapest ticket price of £{0} which departs at {1} and arrives at {2}. Would you like this ticket?".format(out_ticket_price, out_ticket_dep_time, out_ticket_arr_time)
+
+		return ticket_result
+
+	except:
+		reset_answers()
+		return "No ticket with these requirements is available."
 
 
 '''

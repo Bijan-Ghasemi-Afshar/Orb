@@ -1,12 +1,10 @@
 from gtts import gTTS
 import speech_recognition as sr
-# pip install speechrecognition
 import os
 import re
 import webbrowser
 import smtplib
 import requests
-# from weather import Weather, Unit 
 import pyttsx3
 # pip install weather-api
 

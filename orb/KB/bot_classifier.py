@@ -155,12 +155,13 @@ class BotClassifier:
         trainingData.append({"class":"Model", "sentence":"from"})
         trainingData.append({"class":"Model", "sentence":"left"})
         trainingData.append({"class":"Model", "sentence":"on time"})
+        trainingData.append({"class":"Model", "sentence":"not on time"})
 
 
 
         # addidition classifer to detect a reported fault
         trainingData.append({"class":"Fault", "sentence":"fault"})
-        trainingData.append({"class":"Fault", "sentence":"not working"})
+        trainingData.append({"class":"Fault", "sentence":" working"})
         trainingData.append({"class":"Fault", "sentence":"broken"})
         trainingData.append({"class":"Fault", "sentence":"open fault"})
         trainingData.append({"class":"Fault", "sentence":"report issue"})

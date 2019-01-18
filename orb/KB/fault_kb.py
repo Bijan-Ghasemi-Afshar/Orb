@@ -11,4 +11,4 @@ class fault_kb:
     Provides the link to fault reporting website
     '''
     def get_fault_report_link(self):
-        return '<a href=\"http://traintesting.epizy.com\" target=\"_blank\">Ticket</a>'
+        return '<a href=\"http://traintesting.epizy.com\" target=\"_blank\">Report Fault</a>'

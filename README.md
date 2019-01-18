@@ -1,23 +1,56 @@
 # Orb
-A simple chat-bot system
+A simple chat-bot system for booking tickets and predicting estimated arrival time based on journey delay
+
+## Requirements
+1. Python 3.6
+    * pip (Package Manager)
+    * conda (Package Manager)
+2. MongoDB
+3. NodeJS
+    * npm (Package Manager)
+
 
 ## Installation
-* Getting the code `git clone https://github.com/Bijan-Ghasemi-Afshar/Orb.git`
-* Creating a virtual environment `py -3 -m venv venv`
-* Using the virtual environment
-    * If using **Powershell**
-        1. Close the window and reopen it with administration privilages
-        2. Run `set-executionpolicy remotesigned` and Respond `Y`
-        3. Close and reopen the Powershell in the project and the run `venv\Scripts\activate`
-    * If using **Unix-like terminal**
-        1. run `. venv\bin\activate`
-* Getting required python packages
-    * Make sure **pip** is installed then run `pip install -r requirements.txt`
-* Getting the javascript packages
+* **Source Code**
+```
+git clone https://github.com/Bijan-Ghasemi-Afshar/Orb.git
+```
+* Creating a **Virtual Environment**
+```
+conda create -n orbAI
+```
+* Using the **Virtual Environment**
+    * *Linux* & *MacOS*
+    ```
+    source activate orbAI
+    ```
+    * *Windows*
+    ```
+    activate orbAI
+    ```
+* Getting required **Python Packages**
+    ```
+    conda install -r requirements1.txt
+    ```
+    ```
+    pip install -r requirements2.txt
+    ```
+* Getting the **Javascript Packages**
     * Make sure **Nodejs** & **npm** are installed
     * Navigate to **Orb/orb/static**
-    * Run `npm install` to install javascript packages
-    * Then run `npm run build` to bundle javascript & css
+    ```
+    npm install
+    npm run build
+    ```
+* Populating the **Database**
+    * *Train stations*: navigate to project **root (Orb/)**
+    ```
+    python scripts/populate_train_stations.py
+    ```
+    * *Historical data*: navigate to project **root (Orb/)**
+    ```
+    python scripts/historical_data.py
+    ```
 
 ## Running
 * Navigate to **Orb/**

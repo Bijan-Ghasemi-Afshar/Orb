@@ -282,8 +282,12 @@ class DelayModel():
     '''
     def get_average_delay(self, data):
         total = 0
-        for element in data:
-            total += int(element[5])
+        for element in data:            
+            try:
+                int(element[8])
+            except:
+                continue
+            total += int(element[8])
 
         return total/len(data)
 

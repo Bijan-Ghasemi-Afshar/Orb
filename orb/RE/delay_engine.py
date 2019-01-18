@@ -238,7 +238,9 @@ to predict the estimated arrival time
 '''
 def predict_delay():
 
-    delay_factor = modelRegression.get_delay_factor() * 100
+    delay_model_object = regressModel.regressModel()
+
+    delay_factor = delay_model_object.get_delay_factor() * 100
 
     delay_minutes = int(answers['delay'])
 

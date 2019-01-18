@@ -20,18 +20,18 @@ def classify_chat(user_input):
 	conversation_state = state_classifier.classify(user_input)
 	print('This is the chat state ==> ', conversation_state)
 
-	# if conversation_state[0] == 'General':
-	# 	return general_engine
-	# elif conversation_state[0] == 'Booking':
-	# 	return ticket_engine
-	# elif conversation_state[0] == 'Model':
-	# 	return delay_engine
-	# else: #conversation_state[0] == 'Fault'
-	# 	return fault_engine
+	if conversation_state[0] == 'General':
+		return general_engine
+	elif conversation_state[0] == 'Booking':
+		return ticket_engine
+	elif conversation_state[0] == 'Model':
+		return delay_engine
+	else: #conversation_state[0] == 'Fault'
+		return fault_engine
 
 	# return general_engine
 	# return ticket_engine
-	return delay_engine
+	# return delay_engine
 
 
 '''

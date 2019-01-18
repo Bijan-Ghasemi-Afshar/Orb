@@ -2,7 +2,6 @@
 from keras.models import Sequential
 from keras.layers import Dense
 import numpy
-
 import matplotlib.pyplot as plt
 from pandas import read_csv
 import math
